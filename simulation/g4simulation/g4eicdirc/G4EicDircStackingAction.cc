@@ -10,6 +10,9 @@
 #include <Geant4/G4Track.hh>
 #include <Geant4/G4VProcess.hh>
 #include <Geant4/G4ios.hh>
+#include <Geant4/G4ProcessManager.hh>
+#include <Geant4/G4LogicalVolume.hh>
+#include <Geant4/G4String.hh>
 
 #include <gsl/gsl_const.h>
 #include <gsl/gsl_randist.h>
@@ -66,7 +69,8 @@ G4ClassificationOfNewTrack G4EicDircStackingAction::ClassifyNewTrack(const G4Tra
 {
 //  std::cout << "calling stacking action" << std::endl;
   G4VPhysicalVolume* volume = aTrack->GetVolume();
-
+  //G4LogicalVolume* volume_log = volume->GetLogicalVolume();
+  //G4String vol_name = volume->GetName();
 
   if(aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
   { // particle is optical photon
@@ -79,15 +83,29 @@ G4ClassificationOfNewTrack G4EicDircStackingAction::ClassifyNewTrack(const G4Tra
     }
   }
 
-  int whichactive_int = m_Detector->IsInDetector(volume);
-  bool whichactive = (whichactive_int > 0 && whichactive_int < 12);
+  //int whichactive_int = m_Detector->IsInDetector(volume);
+  //bool whichactive = (whichactive_int > 0 && whichactive_int < 12);
   //int whichactive = m_Detector->IsInDetector(volume);
-  if (!whichactive)
+  /*int whichactive = 0;
+  if(vol_log_name == "lFd" || vol_log_name == "lBarL" || vol_log_name == "lBarS" || vol_log_name == "lGlue" || vol_log_name == "lMirror" || vol_log_name == "lLens1" || vol_log_name == "lLens2" || vol_log_name == "lLens3" || vol_log_name == "lPrizm" || vol_log_name == "lMcp" || vol_log_name== "lPixel")
+    {
+      whichactive = 1;
+      }*/
+  /*if (whichactive == 0)
   {
     return fUrgent;
-  }
+    }*/
 
+  /*bool whichactive = (vol_name.contains("lFd") || vol_name.contains("lBarL") || vol_name.contains("lBarS") || vol_name.contains("lGlue") || vol_name.contains("lMirror") || vol_name.contains("lLens1") || vol_name.contains("lLens2") || vol_name.contains("lLens3") || vol_name.contains("lPrizm") || vol_name.contains("lMcp") || vol_name.contains("lPixel"));
+    
+  if (!whichactive)
+    {
+      return fUrgent;
+      }*/
 
+  //G4ProcessManager* pmanager = G4OpticalPhoton::OpticalPhoton()->GetProcessManager();
+  //pmanager->DumpInfo();
+      
   std::string particlename = aTrack->GetDefinition()->GetParticleName();
   if (particlename == "opticalphoton")
   {

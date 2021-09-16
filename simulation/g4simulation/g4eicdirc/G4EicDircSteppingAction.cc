@@ -36,6 +36,8 @@
 #include <Geant4/G4VUserTrackInformation.hh>  // for G4VUserTrackInformation
 #include <Geant4/G4TransportationManager.hh>
 #include <Geant4/Randomize.hh>
+//#include <Geant4/G4ProcessManager.hh>
+//#include <Geant4/G4OpticalPhoton.hh>
 
 #include <cmath>  // for isfinite
 #include <iostream>
@@ -72,19 +74,28 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   // get volume of the current step
   G4VPhysicalVolume *volume = touch->GetVolume();
   G4VPhysicalVolume *volume_post = touchpost->GetVolume();
+  //G4LogicalVolume *volume_log = volume->GetLogicalVolume();
+  //G4LogicalVolume *volume_log_post = volume_post->GetLogicalVolume();
+  //G4String vol_name = volume->GetName();
+  //G4String vol_post_name = volume_post->GetName();
   // IsInDetector(volume) returns
   //  == 0 outside of detector
   //   > 0 for hits in active volume
   //  < 0 for hits in passive material
-  int whichactive_int = m_Detector->IsInDetector(volume);
-  int whichactive_int_post = m_Detector->IsInDetector(volume_post);
-  bool whichactive = (whichactive_int > 0 && whichactive_int < 12);
+  //int whichactive_int = m_Detector->IsInDetector(volume);
+  //int whichactive_int = m_Detector->IsInDetector(volume->GetLogicalVolume());
+  //std::cout << "step is in volume with integer = " << whichactive_int << std::endl;
+  //int whichactive_int_post = m_Detector->IsInDetector(volume_post);
+  //int whichactive_int_post = m_Detector->IsInDetector(volume_post->GetLogicalVolume());
+  //bool whichactive = (whichactive_int > 0 && whichactive_int < 12);
   //int whichactive = m_Detector->IsInDetector(volume);
-  if (!whichactive)
+  //int whichactive = 0;
+  /*bool whichactive = (vol_name.contains("lFd") || vol_name.contains("lBarL") || vol_name.contains("lBarS") || vol_name.contains("lGlue") || vol_name.contains("lMirror") || vol_name.contains("lLens1") || vol_name.contains("lLens2") || vol_name.contains("lLens3") || vol_name.contains("lPrizm") || vol_name.contains("lMcp") || vol_name.contains("lPixel"));
+   */
+  /*if (whichactive == 0)
   {
     return false;
-  }
-
+    }*/
 
   // collect energy and track length step by step
   G4double edep = aStep->GetTotalEnergyDeposit() / GeV;
@@ -93,6 +104,11 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       GeV;
   const G4Track *aTrack = aStep->GetTrack();
 
+  /*if(aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
+    {
+      G4ProcessManager* pmanager = G4OpticalPhoton::OpticalPhoton()->GetProcessManager();
+      pmanager->DumpInfo();
+      }*/
 
   /*if(aTrack->GetCurrentStepNumber()>50000 || aTrack->GetTrackLength() > 30000) 
     {
@@ -194,18 +210,18 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
     // set the initial energy deposit
     m_EdepSum = 0;
-    if (whichactive > 0)
+    //if (whichactive > 0)
     {
       m_EionSum = 0;  // assuming the ionization energy is only needed for active
                       // volumes (scintillators)
       m_Hit->set_eion(0);
       m_SaveHitContainer = m_HitContainer;
     }
-    else
+    /*else
     {
       std::cout << "implement stuff for whichactive < 0 (inactive volumes)" << std::endl;
       gSystem->Exit(1);
-    }
+      }*/
     // this is for the tracking of the truth info
     if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
     {
@@ -265,10 +281,10 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   // ceases to exist
   // sum up the energy to get total deposited
   m_EdepSum += edep;
-  if (whichactive > 0)
+  /*if (whichactive > 0)
   {
     m_EionSum += eion;
-  }
+    }*/
 
 	    	        
   // if any of these conditions is true this is the last step in
@@ -279,6 +295,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   // postPoint->GetStepStatus() == fAtRestDoItProc: track stops (typically
   // aTrack->GetTrackStatus() == fStopAndKill is also set)
   // aTrack->GetTrackStatus() == fStopAndKill: track ends
+
   if (postPoint->GetStepStatus() == fGeomBoundary ||
       postPoint->GetStepStatus() == fWorldBoundary ||
       postPoint->GetStepStatus() == fAtRestDoItProc ||
@@ -286,7 +303,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   {       
     //if((prePoint->GetStepStatus() == fGeomBoundary) && 
     //if(whichactive_int == 9 || whichactive_int == 7 || whichactive_int == 8) // for relection information (7-wLens2, 8-wLens3, 9-wPrizm) 
-      if(whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
+    /*if(whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
       {	 
 	  G4String vname = touch->GetVolume()->GetName();
 	     
@@ -330,12 +347,12 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 		}
 	     
 	    }
-	}   
+	    }*/   
   
 
    // save only hits with energy deposit (or geantino)
-    
-    if (m_EdepSum > 0 || geantino)
+	
+        if (m_EdepSum > 0 || geantino)
     {
       // update values at exit coordinates and set keep flag
       // of track to keep
@@ -345,8 +362,9 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
       m_Hit->set_t(1, postPoint->GetGlobalTime() / nanosecond);
             	      
-      if(whichactive_int_post == 11) // post step in Pixel ---------------
-	{
+      //if(whichactive_int_post == 11) // post step in Pixel ---------------
+      /*if(touchpost->GetVolume()->GetName().contains("lPixel"))
+        {
       // Get cell id 
       //G4int layerNumber = touchpost->GetReplicaNumber(0);
       //const G4DynamicParticle* dynParticle = aTrack->GetDynamicParticle();
@@ -375,7 +393,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       int pix = touchpost->GetReplicaNumber(0);     
      
       Double_t wavelength = 1.2398/(aTrack->GetMomentum().mag()*1E6)*1000;
-      
+      */
       // transport efficiency ----
 
       /*double pi(4 * atan(1));
@@ -405,7 +423,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       */     
 
       // time since track created
-      m_Hit->SetLeadTime(time);
+      /*m_Hit->SetLeadTime(time);
       m_Hit->SetTotTime(wavelength); //set photon wavelength
       m_Hit->SetMcpId(mcp);
       m_Hit->SetPixelId(pix);
@@ -417,11 +435,11 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
                   
       int refl = 0;
       //Int_t normal_id = 0;
-      Long64_t pathId = 0;
+      Long64_t pathId = 0;*/
       //TVector3 mom_bar;
       //TVector3 pos_bar;
 
-      for(std::vector<Int_t>::size_type i = 0; i < vector_trackid.size(); i++)
+      /*for(std::vector<Int_t>::size_type i = 0; i < vector_trackid.size(); i++)
 	{
 	  //if(aTrack->GetTrackID() == vector_trackid[i]) 
 	  if(m_SaveTrackId == vector_trackid[i])
@@ -431,13 +449,13 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 		    //std::cout << "nid = " << normal_id << std::endl;
 	      pathId = (pathId * 10L) + normal_id;
 	    }
-	}
+	    }*/
 	    
       //std::cout << "nrefl = " << refl << std::endl;
       //std::cout << "path id = " << pathId << std::endl;		  
 
-      m_Hit->SetNreflectionsInPrizm(refl);
-      m_Hit->SetPathInPrizm(pathId);
+      //m_Hit->SetNreflectionsInPrizm(refl);
+      //m_Hit->SetPathInPrizm(pathId);
       
       /*for(std::vector<Int_t>::size_type i = 0; i < vector_bar_hit_trackid.size(); i++)
 	{
@@ -496,30 +514,29 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       {
         m_Hit->set_edep(-1);  // only energy=0 g4hits get dropped, this way
                               // geantinos survive the g4hit compression
-        if (whichactive > 0)
+	/* if (whichactive > 0)
         {
           m_Hit->set_eion(-1);
-        }
+	  }*/
       }
       else
       {
         m_Hit->set_edep(m_EdepSum);
       }
-      if (whichactive > 0)
+      /*if (whichactive > 0)
       {
         m_Hit->set_eion(m_EionSum);
-      }
-      //} // pixel volume ends
-
+	}*/
+      
       m_SaveHitContainer->AddHit(detector_id, m_Hit);
 	    	
       // ownership has been transferred to container, set to null
       // so we will create a new hit for the next track
       //m_Hit = nullptr;
       m_Hit = nullptr;
-	}
-    }
-    
+    }	
+  	
+
     else
     {
       // if this hit has no energy deposit, just reset it for reuse
@@ -527,7 +544,9 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       // the last hit we processed the memory is still allocated
       m_Hit->Reset();
     }
+	
   }
+	
 
   // return true to indicate the hit was used
   return true;

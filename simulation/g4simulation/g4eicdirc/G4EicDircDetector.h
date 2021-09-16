@@ -40,6 +40,7 @@ class G4EicDircDetector : public PHG4Detector
   //!@name volume accessors
   //@{
   int IsInDetector(G4VPhysicalVolume *) const;
+  //int IsInDetector(G4LogicalVolume *) const; 
   //@}
  
   void SuperDetector(const std::string &name) { m_SuperDetector = name; }
@@ -104,7 +105,7 @@ class G4EicDircDetector : public PHG4Detector
   G4double zshift;
 
   //G4double fRotAngle;
-  G4RotationMatrix *fPrtRot;
+  //G4RotationMatrix *fPrtRot;
   G4double *fQuantumEfficiency;
 
 
@@ -116,7 +117,8 @@ class G4EicDircDetector : public PHG4Detector
 
   // active volumes
   //std::map<G4VPhysicalVolume *, int> m_PhysicalVolumes_active;
-  std::map<G4LogicalVolume *, int> m_LogicalVolumes_active;
+  //std::map<G4LogicalVolume *, int> m_LogicalVolumes_active;
+  std::set<G4LogicalVolume *> m_LogicalVolumesSet;
 
   std::string m_SuperDetector;
   
