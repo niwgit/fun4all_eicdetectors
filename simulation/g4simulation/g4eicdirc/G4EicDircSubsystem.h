@@ -7,7 +7,7 @@
 
 #include <string>
 
-class G4VProcess;
+//class G4VProcess;
 class G4EicDircDetector;
 class PHCompositeNode;
 class PHG4Detector;

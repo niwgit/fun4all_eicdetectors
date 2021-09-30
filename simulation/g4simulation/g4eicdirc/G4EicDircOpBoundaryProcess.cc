@@ -59,14 +59,17 @@ G4VParticleChange* G4EicDircOpBoundaryProcess::PostStepDoIt(const G4Track& aTrac
     pParticleChange->ProposeTrackStatus(fStopAndKill);
     }*/
 
-  if(aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens3" && pPostStepPoint->GetPosition().z()>pPreStepPoint->GetPosition().z()){
+    /*if(aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens3" && pPostStepPoint->GetPosition().z()>pPreStepPoint->GetPosition().z()){
+    pParticleChange->ProposeTrackStatus(fStopAndKill);
+    }*/
+  
+  if((aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName().contains("wLens3")) && pPostStepPoint->GetPosition().z()>pPreStepPoint->GetPosition().z()){
     pParticleChange->ProposeTrackStatus(fStopAndKill);
   }
   
-  
   // kill photons outside bar and prizm
 
-  if(GetStatus() == FresnelRefraction 
+  /*if(GetStatus() == FresnelRefraction 
      && aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wDirc"){
     pParticleChange->ProposeTrackStatus(fStopAndKill);
     }
@@ -75,7 +78,7 @@ G4VParticleChange* G4EicDircOpBoundaryProcess::PostStepDoIt(const G4Track& aTrac
       || aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens2")
      &&  aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wDirc"){
     pParticleChange->ProposeTrackStatus(fStopAndKill);
-  }
+    }*/
 
   // // black edge of the lens3
   // if((aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens3"
@@ -86,7 +89,7 @@ G4VParticleChange* G4EicDircOpBoundaryProcess::PostStepDoIt(const G4Track& aTrac
   // }
   
   
-  if(aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens1" 
+  /*if(aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens1" 
      && aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wLens1"){
     pParticleChange->ProposeTrackStatus(fStopAndKill);
   }
@@ -94,7 +97,7 @@ G4VParticleChange* G4EicDircOpBoundaryProcess::PostStepDoIt(const G4Track& aTrac
      && aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wLens2"){
     pParticleChange->ProposeTrackStatus(fStopAndKill);
     }
-  
+  */
 
   return pParticleChange;
 

@@ -36,7 +36,6 @@
 #include <Geant4/G4UImanager.hh>
 #include <Geant4/G4VUserDetectorConstruction.hh>
 #include <Geant4/G4ProcessManager.hh>
-#include <Geant4/G4ios.hh>
 
 #include <cmath>
 #include <iostream>  // for operator<<, endl, bas...
@@ -56,57 +55,30 @@ G4EicDircDetector::G4EicDircDetector(PHG4Subsystem *subsys,
 
 //_______________________________________________________________
 
-//int G4EicDircDetector::IsInDetector(G4VPhysicalVolume *volume) const
-//{ 
-  /*if(!volume) return 0; 
-  std::map<G4VPhysicalVolume *, int>::const_iterator iter = m_PhysicalVolumes_active.find(volume);
-  if(iter != m_PhysicalVolumes_active.end())
-    {
-      return iter->second;
-      }*/
-  /*if(!volume) return 0;
-  std::map<G4LogicalVolume *, int>::const_iterator iter = m_LogicalVolumes_active.find(volume->GetLogicalVolume());
-  
-  if(iter != m_LogicalVolumes_active.end())
-    {
-      //std::cout << "integer in logical volume map = " << iter->second << std::endl;
-      return iter->second;
-    }
-  
-  return 0;
-  }*/
-
-/*int G4EicDircDetector::IsInDetector(G4LogicalVolume *volume_log) const
-{ 
-  if(!volume_log) return 0;
-  std::map<G4LogicalVolume *, int>::const_iterator iter = m_LogicalVolumes_active.find(volume_log);
-  
-  if(iter != m_LogicalVolumes_active.end())
-    {
-      return iter->second;
-    }
-  
-  return 0;
-  }*/
-
-int G4EicDircDetector::IsInDetector(G4VPhysicalVolume *volume) const
-{   
+/*int G4EicDircDetector::IsInDetector(G4VPhysicalVolume *volume) const
+{
   if(!volume) return 0;
-  //std::set<G4LogicalVolume *>::const_iterator iter = m_LogicalVolumesSet.find(volume->GetLogicalVolume());
-  /*auto iter = m_LogicalVolumesSet.find(volume->GetLogicalVolume()); 
-  if(iter != m_LogicalVolumesSet.end())
-    {
-      return true;
-      }*/
-  G4String vol_name = volume->GetName();
-
-  if(vol_name.contains("lFd") || vol_name.contains("lBarL") || vol_name.contains("lBarS") || vol_name.contains("lGlue") || vol_name.contains("lMirror") || vol_name.contains("lLens1") || vol_name.contains("lLens2") || vol_name.contains("lLens3") || vol_name.contains("lPrizm") || vol_name.contains("lMcp") || vol_name.contains("lPixel"))
+  //std::cout << "volume set size = " << m_PhysicalVolumesSet.size() << std::endl;
+  std::set<G4VPhysicalVolume *>::const_iterator iter = m_PhysicalVolumesSet.find(volume);
+  if (iter != m_PhysicalVolumesSet.end())
     {
       return 1;
     }
 
   return 0;
+  }*/
+
+int G4EicDircDetector::IsInDetector(G4VPhysicalVolume *volume) const
+{ 
+  std::map<G4VPhysicalVolume *, int>::const_iterator iter = m_PhysicalVolumes_active.find(volume);
+  if(iter != m_PhysicalVolumes_active.end())
+    {
+      return iter->second;
+    }
+
+  return 0;
 }
+
 
 void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
 {
@@ -387,8 +359,6 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   if(fLensId == 6){
     fLens[0] = fPrizm[3]; fLens[1] = fPrizm[0]; fLens[2]=12;
   }  
-
-  //fPrtRot = new G4RotationMatrix();
   
   //-------------------------
   DefineMaterials();
@@ -402,15 +372,16 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
 
   // The DIRC
   //G4Box* gDirc = new G4Box("gDirc",205.962, 193.251, 0.5*dirclength+314.565);
+  //G4Box* gDirc = new G4Box("gDirc",100.0005, 193.251, 0.5*dirclength+0.0005);
   //lDirc = new G4LogicalVolume(gDirc,defaultMaterial,"lDirc",0,0,0);
 
   G4Box* gFd = new G4Box("gFd",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
   //m_LogicalVolumes_active[lFd] = 1;
-  m_LogicalVolumesSet.insert(lFd);
+
 
   double dphi = 360*deg/(double)fNBoxes;  
-  //G4VPhysicalVolume* phy;
+  //G4VPhysicalVolume* phy0;
 
   G4AssemblyVolume* assemblySector = new G4AssemblyVolume();
  
@@ -420,29 +391,28 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
       double dy = fRadius * sin(tphi);
 
       G4RotationMatrix *tRot = new G4RotationMatrix();
-      tRot->rotateZ(-tphi);     
-      G4ThreeVector g4vec_sector_pos(dx, dy, zshift);
-      //phy = new G4PVPlacement(tRot,G4ThreeVector(dx,dy,zshift),lDirc,"wDirc",logicWorld,false,i,OverlapCheck());
-      assemblySector->MakeImprint(logicWorld, g4vec_sector_pos, tRot, i, OverlapCheck());
-      //m_PhysicalVolumes_active[phy] = 1;
+      //tRot->rotateZ(-tphi);     
+      tRot->rotateZ(tphi);
+      //G4ThreeVector g4vec_sector_pos(dx, dy, zshift);
+      phy0 = new G4PVPlacement(tRot,G4ThreeVector(dx,dy,zshift),lDirc,"wDirc",logicWorld,false,i,OverlapCheck());
+      //assemblySector->MakeImprint(logicWorld, g4vec_sector_pos, tRot, i, OverlapCheck());
+      m_PhysicalVolumes_active[phy0] = 1;
       }*/
   
   // The Bar
   G4Box *gBarL = new G4Box("gBarL", fBarL[0]/2., fBarL[1]/2., fBarL[2]/2.);
   lBarL = new G4LogicalVolume(gBarL,BarMaterial,"lBarL",0,0,0);
   //m_LogicalVolumes_active[lBarL] = 2;
-  m_LogicalVolumesSet.insert(lBarL);
+
 
   G4Box *gBarS = new G4Box("gBarS", fBarS[0]/2., fBarS[1]/2., fBarS[2]/2.);
   lBarS = new G4LogicalVolume(gBarS,BarMaterial,"lBarS",0,0,0);
   //m_LogicalVolumes_active[lBarS] = 3;
-  m_LogicalVolumesSet.insert(lBarS);
 
   // Glue
   G4Box *gGlue = new G4Box("gGlue",fBar[0]/2.,fBar[1]/2.,0.5*gluethickness);
   lGlue = new G4LogicalVolume(gGlue,epotekMaterial,"lGlue",0,0,0);
   //m_LogicalVolumes_active[lGlue] = 4;  
-  m_LogicalVolumesSet.insert(lGlue);
 
   int id=0; 
 
@@ -482,8 +452,7 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   G4Box* gMirror = new G4Box("gMirror",fMirror[0]/2.,fMirror[1]/2.,fMirror[2]/2.);
   lMirror = new G4LogicalVolume(gMirror,MirrorMaterial,"lMirror",0,0,0);
   //m_LogicalVolumes_active[lMirror] = 5;
-  m_LogicalVolumesSet.insert(lMirror);
-
+  
   //wMirror =new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fMirror[2]/2.),lMirror,"wMirror", lDirc,false,0,OverlapCheck());
   G4ThreeVector g4vec_lMirror_pos(0, 0, 0.5*dirclength+fMirror[2]/2.);
   assemblySector->AddPlacedVolume(lMirror, g4vec_lMirror_pos, 0);
@@ -549,13 +518,10 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
     
     lLens1 = new G4LogicalVolume(gLens1,BarMaterial,"lLens1",0,0,0);
     //m_LogicalVolumes_active[lLens1] = 6;    
-    m_LogicalVolumesSet.insert(lLens1);
     lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0); //Nlak33aMaterial //PbF2Material //SapphireMaterial
     //m_LogicalVolumes_active[lLens2] = 7;
-    m_LogicalVolumesSet.insert(lLens2);
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
     //m_LogicalVolumes_active[lLens3] = 8;    
-    m_LogicalVolumesSet.insert(lLens3);
   }
 
   if(fLensId == 6){ // 3-component cylindrical lens
@@ -602,7 +568,7 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
     lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0);
     //m_LogicalVolumes_active[lLens2] = 7;
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
-    //m_LogicalVolumes_active[lLens3] = 8;    
+    //m_LogicalVolumes_active[lLens3] = 8;
   }  
 
   if(fLensId ==100){
@@ -610,6 +576,7 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
     G4Box *gLens3 = new G4Box("gLens1",fBar[0]/2.,0.5*fBoxWidth,100);
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
     //m_LogicalVolumes_active[lLens3] = 8;
+    //m_DisplayAction->AddVolume(lLens3, 8);
   }
       
   if(fLensId != 0 && fLensId != 10){
@@ -670,8 +637,8 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   G4Trap* gPrizm = new G4Trap("gPrizm",fPrizm[0],fPrizm[1],fPrizm[2],fPrizm[3]);
   lPrizm = new G4LogicalVolume(gPrizm, BarMaterial,"lPrizm",0,0,0);
   //m_LogicalVolumes_active[lPrizm] = 9;
-  m_LogicalVolumesSet.insert(lPrizm);
-
+  //m_LogicalVolumesSet.insert(lPrizm);
+    
   G4RotationMatrix* xRot = new G4RotationMatrix();
   //xRot->rotateX(-M_PI/2.*rad); // for lDirc
   xRot->rotateX(M_PI/2.*rad);
@@ -698,36 +665,74 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
     G4RotationMatrix *tRot = new G4RotationMatrix();
     tRot->rotateZ(tphi);
     G4ThreeVector g4vec_sector_pos(dx, dy, zshift);
-    //phy = new G4PVPlacement(tRot,G4ThreeVector(dx,dy,zshift),lDirc,"wDirc",logicWorld,false,i,OverlapCheck());                                     
+    //phy = new G4PVPlacement(tRot,G4ThreeVector(dx,dy,zshift),lDirc,"wDirc",logicWorld,false,i,OverlapCheck());                
+                     
     assemblySector->MakeImprint(logicWorld, g4vec_sector_pos, tRot, i, OverlapCheck());
-    //m_PhysicalVolumes_active[phy] = 1;                                                                                                             
+    //m_PhysicalVolumes_active[phy] = 1;                                                                                        
+                     
   }
 
+  G4VPhysicalVolume*phy;
+  int nvolumes_in_assembly = assemblySector->TotalImprintedVolumes();
+  std::cout << "no of volumes in assembly = " << nvolumes_in_assembly << std::endl;
+
+  std::vector<G4VPhysicalVolume*>::iterator iter = assemblySector->GetVolumesIterator();      
+  //phy0 = *iter;
+  int volume_count = 0;
+  G4String vol_name;
+  //vol_first_name = phy0->GetName();
+  //std::cout << "first volume : " << vol_first_name << std::endl;
+
+  //for(std::vector<G4VPhysicalVolume*>::iterator iter = assemblySector->GetVolumesIterator(); iter < assemblySector->TotalImprintedVolumes(); ++iter)
+  for(int nvolumes_in_set = 0; nvolumes_in_set < nvolumes_in_assembly; nvolumes_in_set++)
+    {
+      phy = *iter;
+      //m_PhysicalVolumesSet.insert(phy);
+      if(phy->GetName().contains("lFd")) m_PhysicalVolumes_active[phy] = 1; 
+      else if(phy->GetName().contains("lBarL")) m_PhysicalVolumes_active[phy] = 2;
+      else if(phy->GetName().contains("lBarS")) m_PhysicalVolumes_active[phy] = 3;
+      else if(phy->GetName().contains("lGlue")) m_PhysicalVolumes_active[phy] = 4;
+      else if(phy->GetName().contains("lMirror")) m_PhysicalVolumes_active[phy] = 5;
+      else if(phy->GetName().contains("lLens1")) m_PhysicalVolumes_active[phy] = 6;
+      else if(phy->GetName().contains("lLens2")) m_PhysicalVolumes_active[phy] = 7;
+      else if(phy->GetName().contains("lLens3")) m_PhysicalVolumes_active[phy] = 8;
+      else if(phy->GetName().contains("lPrizm")) m_PhysicalVolumes_active[phy] = 9;
+
+      iter++;      
+      if(volume_count%20 == 0) std::cout << "volume : " << phy->GetName() << std::endl;
+      volume_count++;
+    }
+  //vol_name = phy->GetName();      			    
+  //std::cout << "volume : " << vol_name << std::endl;
+  //std::cout << "no of volumes inserted : " << volume_count << std::endl;
 
   // MCP --
 
   G4Box* gMcp = new G4Box("gMcp",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/2.);
   lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   //m_LogicalVolumes_active[lMcp] = 10;
-  m_LogicalVolumesSet.insert(lMcp);
-
+  //m_LogicalVolumesSet.insert(lMcp);
+    
   fNpix1 = 16;
   fNpix2 = 16;
 
   if (Verbosity ()) std::cout<<"fNpix1="<<fNpix1 << " fNpix2="<<fNpix2 <<std::endl;
         
+  G4VPhysicalVolume *phy1, *phy2;
+
   // The MCP Pixel
   G4Box* gPixel = new G4Box("gPixel",0.5*fMcpActive[0]/fNpix1,0.5*fMcpActive[1]/fNpix2,fMcpActive[2]/16.);
   lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
   //m_LogicalVolumes_active[lPixel] = 11;
-  m_LogicalVolumesSet.insert(lPixel);
-
+  //m_LogicalVolumesSet.insert(lPixel);
+    
   for(int i=0; i<fNpix2; i++){
     for(int j=0; j<fNpix1; j++){
       double shiftx = i*(fMcpActive[0]/fNpix1)-fMcpActive[0]/2.+0.5*fMcpActive[0]/fNpix1;
       double shifty = j*(fMcpActive[1]/fNpix2)-fMcpActive[1]/2.+0.5*fMcpActive[1]/fNpix2;
-      G4VPhysicalVolume* phy1 = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,fNpix2*i+j,OverlapCheck());      
-
+      phy1 = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,fNpix2*i+j,OverlapCheck());      
+      //m_PhysicalVolumesSet.insert(phy1);
+      m_PhysicalVolumes_active[phy1] = 11;
     }
   }
  
@@ -740,14 +745,13 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
       double shiftx = i*(fMcpTotal[0]+gapx)-0.5*(fFd[1]-fMcpTotal[0])+gapx;
       double shifty = j*(fMcpTotal[1]+gapy)-0.5*(fBoxWidth-fMcpTotal[1])+gapy;
       //phy = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lMcp,"wMcp", lFd,false,mcpId++);
-      G4VPhysicalVolume* phy2 = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lMcp,"wMcp", lFd,false,mcpId,OverlapCheck());
-      //m_PhysicalVolumes_active[phy2] = 10;
+      phy2 = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lMcp,"wMcp", lFd,false,mcpId,OverlapCheck());
+      m_PhysicalVolumes_active[phy2] = 10;
+      //m_PhysicalVolumesSet.insert(phy2);
       mcpId++;
     }
   }
 
-  //G4int n_daughters = lMirror->GetNoDaughters(); 
-  //G4cout << "no of daughters = " << n_daughters << G4endl;  
 
   {
     const int num = 36; 
@@ -1173,6 +1177,18 @@ void G4EicDircDetector::SetVisualization(){
   else waPixel->SetVisibility(true);
   lPixel->SetVisAttributes(waPixel);
   
+  /*m_DisplayAction->AddVolume(lFd, 1);
+  m_DisplayAction->AddVolume(lBarL, 2);
+  m_DisplayAction->AddVolume(lBarS, 3);
+  m_DisplayAction->AddVolume(lGlue, 4);
+  m_DisplayAction->AddVolume(lMirror, 5);
+  m_DisplayAction->AddVolume(lLens1, 6);
+  m_DisplayAction->AddVolume(lLens2, 7);
+  m_DisplayAction->AddVolume(lLens3, 8);
+  m_DisplayAction->AddVolume(lPrizm, 9);
+  m_DisplayAction->AddVolume(lMcp, 10);
+  m_DisplayAction->AddVolume(lPixel, 11);
+  */
 }
 
 

@@ -40,6 +40,7 @@ class G4EicDircDetector : public PHG4Detector
   //!@name volume accessors
   //@{
   int IsInDetector(G4VPhysicalVolume *) const;
+  //int IsInSensor(G4VPhysicalVolume *) const;
   //int IsInDetector(G4LogicalVolume *) const; 
   //@}
  
@@ -116,10 +117,10 @@ class G4EicDircDetector : public PHG4Detector
   G4EicDircDisplayAction *m_DisplayAction;
 
   // active volumes
-  //std::map<G4VPhysicalVolume *, int> m_PhysicalVolumes_active;
+  std::map<G4VPhysicalVolume *, int> m_PhysicalVolumes_active;
   //std::map<G4LogicalVolume *, int> m_LogicalVolumes_active;
-  std::set<G4LogicalVolume *> m_LogicalVolumesSet;
-
+  //std::set<G4LogicalVolume *> m_LogicalVolumesSet;
+  //std::set<G4VPhysicalVolume *> m_PhysicalVolumesSet;
   std::string m_SuperDetector;
   
 };

@@ -83,18 +83,18 @@ G4ClassificationOfNewTrack G4EicDircStackingAction::ClassifyNewTrack(const G4Tra
     }
   }
 
-  //int whichactive_int = m_Detector->IsInDetector(volume);
-  //bool whichactive = (whichactive_int > 0 && whichactive_int < 12);
+  int whichactive_int = m_Detector->IsInDetector(volume);
+  bool whichactive = (whichactive_int > 0 && whichactive_int < 12);
   //int whichactive = m_Detector->IsInDetector(volume);
   /*int whichactive = 0;
   if(vol_log_name == "lFd" || vol_log_name == "lBarL" || vol_log_name == "lBarS" || vol_log_name == "lGlue" || vol_log_name == "lMirror" || vol_log_name == "lLens1" || vol_log_name == "lLens2" || vol_log_name == "lLens3" || vol_log_name == "lPrizm" || vol_log_name == "lMcp" || vol_log_name== "lPixel")
     {
       whichactive = 1;
       }*/
-  /*if (whichactive == 0)
+  if (!whichactive)
   {
     return fUrgent;
-    }*/
+  }
 
   /*bool whichactive = (vol_name.contains("lFd") || vol_name.contains("lBarL") || vol_name.contains("lBarS") || vol_name.contains("lGlue") || vol_name.contains("lMirror") || vol_name.contains("lLens1") || vol_name.contains("lLens2") || vol_name.contains("lLens3") || vol_name.contains("lPrizm") || vol_name.contains("lMcp") || vol_name.contains("lPixel"));
     

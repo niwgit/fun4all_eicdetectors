@@ -2,7 +2,7 @@
 
 #include "G4EicDircDetector.h"
 #include "G4EicDircDisplayAction.h"
-#include "G4EicDircOpBoundaryProcess.h"
+//#include "G4EicDircOpBoundaryProcess.h"
 #include "G4EicDircStackingAction.h"
 #include "G4EicDircSteppingAction.h"
 
@@ -24,6 +24,7 @@
 #include <Geant4/G4ProcessManager.hh>
 #include <Geant4/G4ios.hh>
 #include <Geant4/G4SystemOfUnits.hh>
+#include <Geant4/G4OpticalPhoton.hh>
 
 #include <cmath>  // for isfinite
 
@@ -116,22 +117,24 @@ int G4EicDircSubsystem::InitRunSubsystem(PHCompositeNode *topNode)
   }
   m_StackingAction = new G4EicDircStackingAction(m_Detector);
   m_StackingAction->Verbosity(Verbosity());
-
+  
   return 0;
 }
 
 /*void G4EicDircSubsystem::AddProcesses(G4ParticleDefinition *particle)
 {
-  G4ProcessManager* pmanager = particle->GetProcessManager();
-    if (DircBoundary->IsApplicable(*particle))
+  //G4ProcessManager* pmanager = particle->GetProcessManager();
+  //if (DircBoundary->IsApplicable(*particle))
     {
-      pmanager->AddDiscreteProcess(DircBoundary);
-      pmanager->SetProcessOrderingToFirst(DircBoundary, idxPostStep);
+      //pmanager->AddDiscreteProcess(DircBoundary);
+      //pmanager->RemoveProcess(DircBoundary);
+      //pmanager->SetProcessOrderingToFirst(DircBoundary, idxPostStep);
+      G4ProcessManager *pmanager = G4OpticalPhoton::OpticalPhoton()->GetProcessManager();
       pmanager->DumpInfo();
       //G4cout << "dirc boundary process index = " << pmanager->GetProcessIndex(DircBoundary) << G4endl;
       //G4cout << "dirc boundary process ordering = " << pmanager->GetProcessOrdering(DircBoundary, idxPostStep) << G4endl;
     }
-}*/
+    }*/
 
 //_______________________________________________________________________
 int G4EicDircSubsystem::process_event(PHCompositeNode *topNode)
