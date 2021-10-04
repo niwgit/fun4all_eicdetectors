@@ -4,10 +4,10 @@
 #define G4EICDIRCDETECTOR_H
 
 #include <g4main/PHG4Detector.h>
-#include <Geant4/G4Types.hh>
-#include <Geant4/G4ThreeVector.hh>
-#include <Geant4/G4Material.hh>
 #include <Geant4/G4LogicalVolume.hh>
+#include <Geant4/G4Material.hh>
+#include <Geant4/G4ThreeVector.hh>
+#include <Geant4/G4Types.hh>
 
 #include <set>
 #include <map>
@@ -40,8 +40,6 @@ class G4EicDircDetector : public PHG4Detector
   //!@name volume accessors
   //@{
   int IsInDetector(G4VPhysicalVolume *) const;
-  //int IsInSensor(G4VPhysicalVolume *) const;
-  //int IsInDetector(G4LogicalVolume *) const; 
   //@}
  
   void SuperDetector(const std::string &name) { m_SuperDetector = name; }
@@ -109,7 +107,6 @@ class G4EicDircDetector : public PHG4Detector
   //G4RotationMatrix *fPrtRot;
   G4double *fQuantumEfficiency;
 
-
  protected:
   void DefineMaterials();
   PHParameters *m_Params;
@@ -117,10 +114,9 @@ class G4EicDircDetector : public PHG4Detector
   G4EicDircDisplayAction *m_DisplayAction;
 
   // active volumes
-  std::map<G4VPhysicalVolume *, int> m_PhysicalVolumes_active;
-  //std::map<G4LogicalVolume *, int> m_LogicalVolumes_active;
-  //std::set<G4LogicalVolume *> m_LogicalVolumesSet;
-  //std::set<G4VPhysicalVolume *> m_PhysicalVolumesSet;
+  //std::map<G4VPhysicalVolume *, int> m_PhysicalVolumes_active;
+  std::map<G4LogicalVolume *, int> m_LogicalVolumes_active;
+    
   std::string m_SuperDetector;
   
 };

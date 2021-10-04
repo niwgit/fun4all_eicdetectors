@@ -36,8 +36,6 @@
 #include <Geant4/G4VUserTrackInformation.hh>  // for G4VUserTrackInformation
 #include <Geant4/G4TransportationManager.hh>
 #include <Geant4/Randomize.hh>
-#include <Geant4/G4ProcessManager.hh>
-#include <Geant4/G4OpticalPhoton.hh>
 
 #include <cmath>  // for isfinite
 #include <iostream>
@@ -74,33 +72,18 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   // get volume of the current step
   G4VPhysicalVolume *volume = touch->GetVolume();
   G4VPhysicalVolume *volume_post = touchpost->GetVolume();
-  
-  //G4LogicalVolume *volume_log = volume->GetLogicalVolume();
-  //G4LogicalVolume *volume_log_post = volume_post->GetLogicalVolume();
-  G4String vol_name = volume->GetName();
-  //if(vol_name == "World") return false;
-
-  //G4String vol_post_name = volume_post->GetName();
   // IsInDetector(volume) returns
   //  == 0 outside of detector
   //   > 0 for hits in active volume
   //  < 0 for hits in passive material
   int whichactive_int = m_Detector->IsInDetector(volume);
-  //int whichactive_int = m_Detector->IsInDetector(volume->GetLogicalVolume());
-  //std::cout << "step is in volume with integer = " << whichactive_int << std::endl;
   int whichactive_int_post = m_Detector->IsInDetector(volume_post);
-  //int whichactive_int_post = m_Detector->IsInDetector(volume_post->GetLogicalVolume());
   bool whichactive = (whichactive_int > 0 && whichactive_int < 12);
-  //int whichactive = m_Detector->IsInDetector(volume);
-  //int whichactive = 0;
-  /*bool whichactive = (vol_name.contains("lFd") || vol_name.contains("lBarL") || vol_name.contains("lBarS") || vol_name.contains("lGlue") || vol_name.contains("lMirror") || vol_name.contains("lLens1") || vol_name.contains("lLens2") || vol_name.contains("lLens3") || vol_name.contains("lPrizm") || vol_name.contains("lMcp") || vol_name.contains("lPixel"));
-   */
+  
   if (!whichactive)
   {
     return false;
   }
-
-  std::cout << "step is in volume : " << vol_name << std::endl;
 
   // collect energy and track length step by step
   G4double edep = aStep->GetTotalEnergyDeposit() / GeV;
@@ -109,15 +92,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       GeV;
   const G4Track *aTrack = aStep->GetTrack();
 
-  //G4ProcessManager *pmanager = G4OpticalPhoton::OpticalPhoton()->GetProcessManager();
-  //pmanager->DumpInfo();
-
-  /*if(aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
-    {
-      G4ProcessManager* pmanager = G4OpticalPhoton::OpticalPhoton()->GetProcessManager();
-      pmanager->DumpInfo();
-      }*/
-
+  
   /*if(aTrack->GetCurrentStepNumber()>50000 || aTrack->GetTrackLength() > 30000) 
     {
       G4Track *killtrack0 = const_cast<G4Track *>(aTrack);
@@ -371,7 +346,6 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       m_Hit->set_t(1, postPoint->GetGlobalTime() / nanosecond);
             	      
       if(whichactive_int_post == 11) // post step in Pixel ---------------
-      //if(touchpost->GetVolume()->GetName().contains("lPixel"))
         {
       // Get cell id 
       //G4int layerNumber = touchpost->GetReplicaNumber(0);
@@ -554,7 +528,6 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
     }
     }
 	
-
   // return true to indicate the hit was used
   return true;
     

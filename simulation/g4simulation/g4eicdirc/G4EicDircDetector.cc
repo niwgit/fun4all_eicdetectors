@@ -10,32 +10,31 @@
 
 #include <Geant4/G4AssemblyVolume.hh>
 #include <Geant4/G4Box.hh>
+#include <Geant4/G4Colour.hh>
 #include <Geant4/G4Cons.hh>
-#include <Geant4/G4Trd.hh>
+#include <Geant4/G4Element.hh>
 #include <Geant4/G4IntersectionSolid.hh>
+#include <Geant4/G4LogicalBorderSurface.hh>
+#include <Geant4/G4LogicalSkinSurface.hh>
 #include <Geant4/G4LogicalVolume.hh>
 #include <Geant4/G4Material.hh>
+#include <Geant4/G4OpticalSurface.hh>
 #include <Geant4/G4PVPlacement.hh>
+#include <Geant4/G4ProcessManager.hh>
 #include <Geant4/G4RotationMatrix.hh>
+#include <Geant4/G4RunManager.hh>
 #include <Geant4/G4Sphere.hh>
 #include <Geant4/G4SubtractionSolid.hh>
 #include <Geant4/G4SystemOfUnits.hh>
 #include <Geant4/G4ThreeVector.hh>
-#include <Geant4/G4Trap.hh>
-#include <Geant4/G4Tubs.hh>
-#include <Geant4/G4Element.hh>
-#include <Geant4/G4LogicalBorderSurface.hh>
-#include <Geant4/G4LogicalSkinSurface.hh>
-#include <Geant4/G4OpticalSurface.hh>
-#include <Geant4/G4UnionSolid.hh>
 #include <Geant4/G4Transform3D.hh>
-#include <Geant4/G4SystemOfUnits.hh>
-#include <Geant4/G4RunManager.hh>
-#include <Geant4/G4Colour.hh>
-#include <Geant4/G4VisAttributes.hh>
+#include <Geant4/G4Trap.hh>
+#include <Geant4/G4Trd.hh>
+#include <Geant4/G4Tubs.hh>
 #include <Geant4/G4UImanager.hh>
+#include <Geant4/G4UnionSolid.hh>
 #include <Geant4/G4VUserDetectorConstruction.hh>
-#include <Geant4/G4ProcessManager.hh>
+#include <Geant4/G4VisAttributes.hh>
 
 #include <cmath>
 #include <iostream>  // for operator<<, endl, bas...
@@ -54,21 +53,20 @@ G4EicDircDetector::G4EicDircDetector(PHG4Subsystem *subsys,
 }
 
 //_______________________________________________________________
-
-/*int G4EicDircDetector::IsInDetector(G4VPhysicalVolume *volume) const
+int G4EicDircDetector::IsInDetector(G4VPhysicalVolume* volume) const
 {
-  if(!volume) return 0;
-  //std::cout << "volume set size = " << m_PhysicalVolumesSet.size() << std::endl;
-  std::set<G4VPhysicalVolume *>::const_iterator iter = m_PhysicalVolumesSet.find(volume);
-  if (iter != m_PhysicalVolumesSet.end())
+  if (!volume) return 0;
+  std::map<G4LogicalVolume*, int>::const_iterator iter = m_LogicalVolumes_active.find(volume->GetLogicalVolume());
+
+  if (iter != m_LogicalVolumes_active.end())
     {
-      return 1;
+      return iter->second;
     }
 
   return 0;
-  }*/
+}
 
-int G4EicDircDetector::IsInDetector(G4VPhysicalVolume *volume) const
+/*int G4EicDircDetector::IsInDetector(G4VPhysicalVolume *volume) const
 { 
   std::map<G4VPhysicalVolume *, int>::const_iterator iter = m_PhysicalVolumes_active.find(volume);
   if(iter != m_PhysicalVolumes_active.end())
@@ -77,7 +75,7 @@ int G4EicDircDetector::IsInDetector(G4VPhysicalVolume *volume) const
     }
 
   return 0;
-}
+  }*/
 
 
 void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
@@ -328,7 +326,6 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
 
   fBarsGap = 0.15;
   
-  if (Verbosity ()) std::cout << "Nbarboxes = "<< fNBoxes << std::endl;
   if (Verbosity ()) std::cout << "barrel radius = " << fRadius << " mm" << std::endl;
   
   fMirror[0] = m_Params->get_double_param("Mirror_height"); 
@@ -341,6 +338,7 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   fBoxWidth = fPrizm[0];
 
   if(fGeomType == 1)  fNBoxes = 1;
+  if (Verbosity ()) std::cout << "Nbarboxes = "<< fNBoxes << std::endl;
 
   fFd[0] = fBoxWidth; fFd[1]=fPrizm[2]; fFd[2] =1;
 
@@ -372,12 +370,11 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
 
   // The DIRC
   //G4Box* gDirc = new G4Box("gDirc",205.962, 193.251, 0.5*dirclength+314.565);
-  //G4Box* gDirc = new G4Box("gDirc",100.0005, 193.251, 0.5*dirclength+0.0005);
   //lDirc = new G4LogicalVolume(gDirc,defaultMaterial,"lDirc",0,0,0);
 
   G4Box* gFd = new G4Box("gFd",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
-  //m_LogicalVolumes_active[lFd] = 1;
+  m_LogicalVolumes_active[lFd] = 1;
 
 
   double dphi = 360*deg/(double)fNBoxes;  
@@ -402,17 +399,17 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   // The Bar
   G4Box *gBarL = new G4Box("gBarL", fBarL[0]/2., fBarL[1]/2., fBarL[2]/2.);
   lBarL = new G4LogicalVolume(gBarL,BarMaterial,"lBarL",0,0,0);
-  //m_LogicalVolumes_active[lBarL] = 2;
+  m_LogicalVolumes_active[lBarL] = 2;
 
 
   G4Box *gBarS = new G4Box("gBarS", fBarS[0]/2., fBarS[1]/2., fBarS[2]/2.);
   lBarS = new G4LogicalVolume(gBarS,BarMaterial,"lBarS",0,0,0);
-  //m_LogicalVolumes_active[lBarS] = 3;
+  m_LogicalVolumes_active[lBarS] = 3;
 
   // Glue
   G4Box *gGlue = new G4Box("gGlue",fBar[0]/2.,fBar[1]/2.,0.5*gluethickness);
   lGlue = new G4LogicalVolume(gGlue,epotekMaterial,"lGlue",0,0,0);
-  //m_LogicalVolumes_active[lGlue] = 4;  
+  m_LogicalVolumes_active[lGlue] = 4;  
 
   int id=0; 
 
@@ -451,7 +448,7 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   // The Mirror
   G4Box* gMirror = new G4Box("gMirror",fMirror[0]/2.,fMirror[1]/2.,fMirror[2]/2.);
   lMirror = new G4LogicalVolume(gMirror,MirrorMaterial,"lMirror",0,0,0);
-  //m_LogicalVolumes_active[lMirror] = 5;
+  m_LogicalVolumes_active[lMirror] = 5;
   
   //wMirror =new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fMirror[2]/2.),lMirror,"wMirror", lDirc,false,0,OverlapCheck());
   G4ThreeVector g4vec_lMirror_pos(0, 0, 0.5*dirclength+fMirror[2]/2.);
@@ -470,9 +467,9 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
     G4SubtractionSolid* gLens2 = new G4SubtractionSolid("Fbox-Sphere", gfbox, gsphere,new G4RotationMatrix(),zTrans);
 
     lLens1 = new G4LogicalVolume(gLens1,Nlak33aMaterial,"lLens1",0,0,0); //Nlak33aMaterial  
-    //m_LogicalVolumes_active[lLens1] = 6;
+    m_LogicalVolumes_active[lLens1] = 6;
     lLens2 = new G4LogicalVolume(gLens2,BarMaterial,"lLens2",0,0,0);
-    //m_LogicalVolumes_active[lLens2] = 7;
+    m_LogicalVolumes_active[lLens2] = 7;
     
   }
 
@@ -517,11 +514,11 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
     G4SubtractionSolid*  gLens3 = new G4SubtractionSolid("Lens3", gLenst, gsphere2,new G4RotationMatrix(),-zTrans2);
     
     lLens1 = new G4LogicalVolume(gLens1,BarMaterial,"lLens1",0,0,0);
-    //m_LogicalVolumes_active[lLens1] = 6;    
+    m_LogicalVolumes_active[lLens1] = 6;    
     lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0); //Nlak33aMaterial //PbF2Material //SapphireMaterial
-    //m_LogicalVolumes_active[lLens2] = 7;
+    m_LogicalVolumes_active[lLens2] = 7;
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
-    //m_LogicalVolumes_active[lLens3] = 8;    
+    m_LogicalVolumes_active[lLens3] = 8;    
   }
 
   if(fLensId == 6){ // 3-component cylindrical lens
@@ -564,19 +561,18 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
     G4SubtractionSolid*  gLens3 = new G4SubtractionSolid("Lens3", gLenst, gcylinder2c, xRot,zTrans2);
 
     lLens1 = new G4LogicalVolume(gLens1,BarMaterial,"lLens1",0,0,0);
-    //m_LogicalVolumes_active[lLens1] = 6;
+    m_LogicalVolumes_active[lLens1] = 6;
     lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0);
-    //m_LogicalVolumes_active[lLens2] = 7;
+    m_LogicalVolumes_active[lLens2] = 7;
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
-    //m_LogicalVolumes_active[lLens3] = 8;
+    m_LogicalVolumes_active[lLens3] = 8;
   }  
 
   if(fLensId ==100){
     fLens[2]=200;
     G4Box *gLens3 = new G4Box("gLens1",fBar[0]/2.,0.5*fBoxWidth,100);
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
-    //m_LogicalVolumes_active[lLens3] = 8;
-    //m_DisplayAction->AddVolume(lLens3, 8);
+    m_LogicalVolumes_active[lLens3] = 8;    
   }
       
   if(fLensId != 0 && fLensId != 10){
@@ -636,8 +632,7 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   // The Prizm
   G4Trap* gPrizm = new G4Trap("gPrizm",fPrizm[0],fPrizm[1],fPrizm[2],fPrizm[3]);
   lPrizm = new G4LogicalVolume(gPrizm, BarMaterial,"lPrizm",0,0,0);
-  //m_LogicalVolumes_active[lPrizm] = 9;
-  //m_LogicalVolumesSet.insert(lPrizm);
+  m_LogicalVolumes_active[lPrizm] = 9;  
     
   G4RotationMatrix* xRot = new G4RotationMatrix();
   //xRot->rotateX(-M_PI/2.*rad); // for lDirc
@@ -672,7 +667,7 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
                      
   }
 
-  G4VPhysicalVolume*phy;
+  /*G4VPhysicalVolume*phy;
   int nvolumes_in_assembly = assemblySector->TotalImprintedVolumes();
   std::cout << "no of volumes in assembly = " << nvolumes_in_assembly << std::endl;
 
@@ -705,34 +700,30 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   //vol_name = phy->GetName();      			    
   //std::cout << "volume : " << vol_name << std::endl;
   //std::cout << "no of volumes inserted : " << volume_count << std::endl;
-
+  */
   // MCP --
 
   G4Box* gMcp = new G4Box("gMcp",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/2.);
   lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
-  //m_LogicalVolumes_active[lMcp] = 10;
-  //m_LogicalVolumesSet.insert(lMcp);
+  m_LogicalVolumes_active[lMcp] = 10;  
     
   fNpix1 = 16;
   fNpix2 = 16;
 
   if (Verbosity ()) std::cout<<"fNpix1="<<fNpix1 << " fNpix2="<<fNpix2 <<std::endl;
         
-  G4VPhysicalVolume *phy1, *phy2;
 
   // The MCP Pixel
   G4Box* gPixel = new G4Box("gPixel",0.5*fMcpActive[0]/fNpix1,0.5*fMcpActive[1]/fNpix2,fMcpActive[2]/16.);
   lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
-  //m_LogicalVolumes_active[lPixel] = 11;
-  //m_LogicalVolumesSet.insert(lPixel);
+  m_LogicalVolumes_active[lPixel] = 11;
     
   for(int i=0; i<fNpix2; i++){
     for(int j=0; j<fNpix1; j++){
       double shiftx = i*(fMcpActive[0]/fNpix1)-fMcpActive[0]/2.+0.5*fMcpActive[0]/fNpix1;
       double shifty = j*(fMcpActive[1]/fNpix2)-fMcpActive[1]/2.+0.5*fMcpActive[1]/fNpix2;
-      phy1 = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,fNpix2*i+j,OverlapCheck());      
-      //m_PhysicalVolumesSet.insert(phy1);
-      m_PhysicalVolumes_active[phy1] = 11;
+      G4VPhysicalVolume *phy1 = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,fNpix2*i+j,OverlapCheck());      
+      //m_PhysicalVolumes_active[phy1] = 11;
     }
   }
  
@@ -745,9 +736,8 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
       double shiftx = i*(fMcpTotal[0]+gapx)-0.5*(fFd[1]-fMcpTotal[0])+gapx;
       double shifty = j*(fMcpTotal[1]+gapy)-0.5*(fBoxWidth-fMcpTotal[1])+gapy;
       //phy = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lMcp,"wMcp", lFd,false,mcpId++);
-      phy2 = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lMcp,"wMcp", lFd,false,mcpId,OverlapCheck());
-      m_PhysicalVolumes_active[phy2] = 10;
-      //m_PhysicalVolumesSet.insert(phy2);
+      G4VPhysicalVolume *phy2 = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lMcp,"wMcp", lFd,false,mcpId,OverlapCheck());
+      //m_PhysicalVolumes_active[phy2] = 10;
       mcpId++;
     }
   }
@@ -944,13 +934,30 @@ void G4EicDircDetector::DefineMaterials()
 
   double PhotonEnergyNlak33a[76] = {1,1.2511,1.26386,1.27687,1.29016,1.30372,1.31758,1.33173,1.34619,1.36097,1.37607,1.39152,1.40731,1.42347,1.44,1.45692,1.47425,1.49199,1.51016,1.52878,1.54787,1.56744,1.58751,1.6081,1.62923,1.65092,1.6732,1.69609,1.71961,1.7438,1.76868,1.79427,1.82062,1.84775,1.87571,1.90452,1.93423,1.96488,1.99652,2.0292,2.06296,2.09787,2.13398,2.17135,2.21006,2.25017,2.29176,2.33492,2.37973,2.42631,2.47473,2.52514,2.57763,2.63236,2.68946,2.7491,2.81143,2.87666,2.94499,3.01665,3.09187,3.17095,3.25418,3.34189,3.43446,3.53231,3.6359,3.74575,3.86244,3.98663,4.11908,4.26062,4.41225,4.57506,4.75035,4.93961};
   
+  for(int i=0; i < 76; i++)
+    {
+      PhotonEnergyNlak33a[i] = PhotonEnergyNlak33a[i]*eV;
+    }
+
   int n_PbF2=56;
   double en_PbF2[] = {1.55 ,1.569,1.59 ,1.61 ,1.631,1.653,1.675,1.698,1.722,1.746,1.771,1.797,1.823,1.851,1.879,1.907,1.937,1.968,2    ,2.033,2.066,2.101,2.138,2.175,2.214,2.254,2.296,2.339,2.384,2.431,2.48 ,2.53 ,2.583,2.638,2.695,2.755,2.818,2.883,2.952,3.024,3.1  ,3.179,3.263,3.351,3.444,3.542,3.647,3.757,3.875,3.999,4.133,4.275,4.428,4.592,4.769,4.959};
+  
+  for(int i=0; i < 56; i++)
+    {
+      en_PbF2[i] = en_PbF2[i]*eV;
+    }
+
   double ab_PbF2[]= {407,403.3,379.1,406.3,409.7,408.9,406.7,404.7,391.7,397.7,409.6,403.7,403.8,409.7,404.9,404.2,407.1,411.1,403.1,406.1,415.4,399.1,405.8,408.2,385.7,405.6,405.2,401.6,402.6,407.1,417.7,401.1,389.9,411.9,400.9,398.3,402.1,408.7,384.8,415.8,413.1,385.7,353.7,319.1,293.6,261.9,233.6,204.4,178.3,147.6,118.2,78.7 ,51.6 ,41.5 ,24.3 ,8.8};
   double ref_PbF2[]= {1.749,1.749,1.75 ,1.75 ,1.751,1.752,1.752,1.753,1.754,1.754,1.755,1.756,1.757,1.757,1.758,1.759,1.76 ,1.761,1.762,1.764,1.765,1.766,1.768,1.769,1.771,1.772,1.774,1.776,1.778,1.78 ,1.782,1.785,1.787,1.79 ,1.793,1.796,1.8  ,1.804,1.808,1.813,1.818,1.824,1.83 ,1.837,1.845,1.854,1.865,1.877,1.892,1.91 ,1.937,1.991,1.38 ,1.915,1.971,2.019};
 
   const int n_Sapphire=57;
   double en_Sapphire[] = {1.02212,1.05518,1.09045,1.12610,1.16307,1.20023,1.23984,1.28043,1.32221,1.36561,1.41019,1.45641,1.50393,1.55310,1.60393,1.65643,1.71059,1.76665,1.82437,1.88397,1.94576,2.00946,2.07504,2.14283,2.21321,2.28542,2.36025,2.43727,2.51693,2.59924,2.68480,2.77245,2.86337,2.95693,3.05379,3.15320,3.25674,3.36273,3.47294,3.58646,3.70433,3.82549,3.94979,4.07976,4.21285,4.35032,4.49380,4.64012,4.79258,4.94946,5.11064,5.27816,5.44985,5.62797,5.81266,6.00407,6.19920};
+
+  for(int i=0; i < 57; i++)
+    {
+      en_Sapphire[i] = en_Sapphire[i]*eV;
+    }
+
   double ref_Sapphire[] = {1.75188,1.75253,1.75319,1.75382,1.75444,1.75505,1.75567,1.75629,1.75691,1.75754,1.75818,1.75883,1.75949,1.76017,1.76088,1.76160,1.76235,1.76314,1.76395,1.76480,1.76570,1.76664,1.76763,1.76867,1.76978,1.77095,1.77219,1.77350,1.77490,1.77639,1.77799,1.77968,1.78150,1.78343,1.78551,1.78772,1.79011,1.79265,1.79540,1.79835,1.80154,1.80497,1.80864,1.81266,1.81696,1.82163,1.82674,1.83223,1.83825,1.84480,1.85191,1.85975,1.86829,1.87774,1.88822,1.89988,1.91270};
 
   double ab_Sapphire[n_Sapphire];
@@ -1058,6 +1065,8 @@ void G4EicDircDetector::DefineMaterials()
   //  assign this parameter table to the air 
   defaultMaterial->SetMaterialPropertiesTable(AirMPT);
 
+  G4Material *G4_AIR = G4Material::GetMaterial("G4_AIR");
+  G4_AIR->SetMaterialPropertiesTable(AirMPT);
 
   // KamLandOil                                                
   G4MaterialPropertiesTable* KamLandOilMPT = new G4MaterialPropertiesTable();
@@ -1176,19 +1185,7 @@ void G4EicDircDetector::SetVisualization(){
   if(fMcpLayout==3) waPixel->SetVisibility(false);
   else waPixel->SetVisibility(true);
   lPixel->SetVisAttributes(waPixel);
-  
-  /*m_DisplayAction->AddVolume(lFd, 1);
-  m_DisplayAction->AddVolume(lBarL, 2);
-  m_DisplayAction->AddVolume(lBarS, 3);
-  m_DisplayAction->AddVolume(lGlue, 4);
-  m_DisplayAction->AddVolume(lMirror, 5);
-  m_DisplayAction->AddVolume(lLens1, 6);
-  m_DisplayAction->AddVolume(lLens2, 7);
-  m_DisplayAction->AddVolume(lLens3, 8);
-  m_DisplayAction->AddVolume(lPrizm, 9);
-  m_DisplayAction->AddVolume(lMcp, 10);
-  m_DisplayAction->AddVolume(lPixel, 11);
-  */
+    
 }
 
 
