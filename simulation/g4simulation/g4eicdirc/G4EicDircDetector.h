@@ -9,7 +9,6 @@
 #include <Geant4/G4ThreeVector.hh>
 #include <Geant4/G4Types.hh>
 
-#include <set>
 #include <map>
 #include <string>  // for string
 
@@ -102,9 +101,6 @@ class G4EicDircDetector : public PHG4Detector
   G4ThreeVector fPrismShift;
   G4double fBarsGap;
   G4double zshift;
-
-  //G4double fRotAngle;
-  //G4RotationMatrix *fPrtRot;
   G4double *fQuantumEfficiency;
 
  protected:
@@ -114,7 +110,6 @@ class G4EicDircDetector : public PHG4Detector
   G4EicDircDisplayAction *m_DisplayAction;
 
   // active volumes
-  //std::map<G4VPhysicalVolume *, int> m_PhysicalVolumes_active;
   std::map<G4LogicalVolume *, int> m_LogicalVolumes_active;
     
   std::string m_SuperDetector;

@@ -168,7 +168,7 @@ void G4EicDircSubsystem::SetDefaultParameters()
   // sizes are in cm
   // angles are in deg
   // units will be converted to G4 units when used
-  set_default_double_param("place_x", 0.);
+  /*set_default_double_param("place_x", 0.);
   set_default_double_param("place_y", 0.);
   set_default_double_param("place_z", 0.);
   set_default_double_param("rot_x", 0.);
@@ -180,11 +180,11 @@ void G4EicDircSubsystem::SetDefaultParameters()
 
   set_default_double_param("rMin", 74.1);
   set_default_double_param("rMin_inner", 60.0);
-  set_default_double_param("length", 287 + 168);
-
-  set_default_double_param("NBars", 11);
-  set_default_double_param("Radius", 75.0*cm);
-  set_default_double_param("Prizm_width", 38.65*cm);
+  set_default_double_param("length", 287 + 168);*/
+  
+  set_default_double_param("NBars", 10);
+  set_default_double_param("Radius", 72.96*cm);
+  set_default_double_param("Prizm_width", 35.135*cm);
   set_default_double_param("Prizm_length", 30.0*cm);
   set_default_double_param("Prizm_height_at_lens", 5.0*cm);
   set_default_double_param("Bar_thickness", 1.725*cm);
