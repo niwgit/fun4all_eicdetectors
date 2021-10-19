@@ -60,6 +60,7 @@ G4EicDircSteppingAction::~G4EicDircSteppingAction()
   // if the last hit was saved, hit is a nullptr pointer which are
   // legal to delete (it results in a no operation)
   delete m_Hit;
+  delete m_PrtHit;
 }
 
 
@@ -342,10 +343,9 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
  
 	case fGeomBoundary:
 	case fUndefined:
-	  if (!m_Hit)
+	  if (!m_PrtHit)
 	    {
-	      //m_Hit = new PHG4Hitv1();
-	      m_Hit = new PrtHit();
+	      m_PrtHit = new PrtHit();
 	    }
   
     // for momentum direction at bar
@@ -355,15 +355,15 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 	// ownership has been transferred to container, set to null                                                                                  
     	// so we will create a new hit for the next track                                                                                            
      
-	  m_Hit->set_layer(detector_id);
+	  m_PrtHit->set_layer(detector_id);
 	  // here we set the entrance values in cm
-	  m_Hit->set_x(0, prePoint->GetPosition().x() / cm);
-	  m_Hit->set_y(0, prePoint->GetPosition().y() / cm);
-	  m_Hit->set_z(0, prePoint->GetPosition().z() / cm);
+	  m_PrtHit->set_x(0, prePoint->GetPosition().x() / cm);
+	  m_PrtHit->set_y(0, prePoint->GetPosition().y() / cm);
+	  m_PrtHit->set_z(0, prePoint->GetPosition().z() / cm);
 	  // time in ns
-	  m_Hit->set_t(0, prePoint->GetGlobalTime() / nanosecond);
+	  m_PrtHit->set_t(0, prePoint->GetGlobalTime() / nanosecond);
 	  // set the track ID
-	  m_Hit->set_trkid(aTrack->GetTrackID());
+	  m_PrtHit->set_trkid(aTrack->GetTrackID());
 	  m_SaveTrackId = aTrack->GetTrackID();
 
 	  // set the initial energy deposit
@@ -372,7 +372,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 	    {
 	      m_EionSum = 0;  // assuming the ionization energy is only needed for active
 	                     // volumes (scintillators)
-	      m_Hit->set_eion(0);
+	      m_PrtHit->set_eion(0);
 	      m_SaveHitContainer = m_HitContainer;
 	    }
 	  else
@@ -385,9 +385,9 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 	    {
 	      if (PHG4TrackUserInfoV1 *pp = dynamic_cast<PHG4TrackUserInfoV1 *>(p))
 		{
-		  m_Hit->set_trkid(pp->GetUserTrackId());
+		  m_PrtHit->set_trkid(pp->GetUserTrackId());
 		  pp->GetShower()->add_g4hit_id(m_SaveHitContainer->GetID(),
-						m_Hit->get_hit_id());
+						m_PrtHit->get_hit_id());
 		}
 	    }
 
@@ -399,7 +399,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
       // some sanity checks for inconsistencies (aka bugs)
       // check if this hit was created, if not print out last post step status
-      if (!m_Hit || !isfinite(m_Hit->get_x(0)))
+      if (!m_PrtHit || !isfinite(m_PrtHit->get_x(0)))
 	{
 	  std::cout << GetName() << ": hit was not created" << std::endl;
 	  std::cout << "prestep status: "
@@ -514,11 +514,11 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 	  {
       // update values at exit coordinates and set keep flag
       // of track to keep
-      m_Hit->set_x(1, postPoint->GetPosition().x() / cm);
-      m_Hit->set_y(1, postPoint->GetPosition().y() / cm);
-      m_Hit->set_z(1, postPoint->GetPosition().z() / cm);
+      m_PrtHit->set_x(1, postPoint->GetPosition().x() / cm);
+      m_PrtHit->set_y(1, postPoint->GetPosition().y() / cm);
+      m_PrtHit->set_z(1, postPoint->GetPosition().z() / cm);
 
-      m_Hit->set_t(1, postPoint->GetGlobalTime() / nanosecond);
+      m_PrtHit->set_t(1, postPoint->GetGlobalTime() / nanosecond);
             	      
       if(whichactive_int_post == 11) // post step in Pixel ---------------
         {
@@ -580,15 +580,15 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       */     
 
       // time since track created
-      m_Hit->SetLeadTime(time);
-      m_Hit->SetTotTime(wavelength); //set photon wavelength
-      m_Hit->SetMcpId(mcp);
-      m_Hit->SetPixelId(pix);
-      m_Hit->SetGlobalPos(globalPos);
-      m_Hit->SetLocalPos(localPos);
-      m_Hit->SetDigiPos(digiPos);
-      m_Hit->SetPosition(position);
-      m_Hit->SetMomentum(momentum);
+      m_PrtHit->SetLeadTime(time);
+      m_PrtHit->SetTotTime(wavelength); //set photon wavelength
+      m_PrtHit->SetMcpId(mcp);
+      m_PrtHit->SetPixelId(pix);
+      m_PrtHit->SetGlobalPos(globalPos);
+      m_PrtHit->SetLocalPos(localPos);
+      m_PrtHit->SetDigiPos(digiPos);
+      m_PrtHit->SetPosition(position);
+      m_PrtHit->SetMomentum(momentum);
                   
       int refl = 0;
       //Int_t normal_id = 0;
@@ -671,28 +671,28 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       }
       if (geantino)
       {
-        m_Hit->set_edep(-1);  // only energy=0 g4hits get dropped, this way
+        m_PrtHit->set_edep(-1);  // only energy=0 g4hits get dropped, this way
                               // geantinos survive the g4hit compression
 	if (whichactive > 0)
         {
-          m_Hit->set_eion(-1);
+          m_PrtHit->set_eion(-1);
 	}
       }
       else
       {
-        m_Hit->set_edep(m_EdepSum);
+        m_PrtHit->set_edep(m_EdepSum);
       }
       if (whichactive > 0)
       {
-        m_Hit->set_eion(m_EionSum);
+        m_PrtHit->set_eion(m_EionSum);
       }
       
-      m_SaveHitContainer->AddHit(detector_id, m_Hit);
+      m_SaveHitContainer->AddHit(detector_id, m_PrtHit);
 	    	
       // ownership has been transferred to container, set to null
       // so we will create a new hit for the next track
       //m_Hit = nullptr;
-      m_Hit = nullptr;
+      m_PrtHit = nullptr;
 	}
 	  }
   	  	
@@ -701,7 +701,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       // if this hit has no energy deposit, just reset it for reuse
       // this means we have to delete it in the dtor. If this was
       // the last hit we processed the memory is still allocated
-      m_Hit->Reset();
+      m_PrtHit->Reset();
     }
     }
 	
