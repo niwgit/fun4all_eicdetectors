@@ -54,7 +54,7 @@ class G4EicDircSteppingAction : public PHG4SteppingAction
   PHG4HitContainer* m_HitContainer = nullptr;
   PHG4HitContainer* m_AbsorberHitContainer = nullptr;
   PHG4HitContainer* m_SupportHitContainer = nullptr;
-  //PHG4Hit* m_Hit = nullptr;
+  PHG4Hit* m_Hit = nullptr;
   PrtHit* m_Hit = nullptr;
   PHG4HitContainer* m_SaveHitContainer = nullptr;
 
