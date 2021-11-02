@@ -18,7 +18,6 @@ typedef struct
   //Double_t track_mom_bar[3];
   //Double_t track_hit_pos_bar[3];
 
-
   // Hit level
   int nhits;
   int detid[MAXHIT];
@@ -36,15 +35,20 @@ typedef struct
   //Double_t track_mom_bar[MAXHIT][3];
   //Double_t track_hit_pos_bar[MAXHIT][3];
   Double_t lead_time[MAXHIT];
+  Double_t bar_hit_time[MAXHIT];
+  Double_t track_angle_at_bar[MAXHIT];
+  Double_t track_phi[MAXHIT];
+  Double_t track_mom[MAXHIT][3];
+  Double_t track_pos[MAXHIT][3];
   Double_t wavelength[MAXHIT];
   Double_t hit_globalPos[MAXHIT][3];
   Double_t hit_localPos[MAXHIT][3];
   Double_t hit_digiPos[MAXHIT][3];
-  Double_t hit_mom[MAXHIT][3];
-  Double_t hit_pos[MAXHIT][3];
+  //Double_t hit_mom[MAXHIT][3];
+  //Double_t hit_pos[MAXHIT][3];
   //Long64_t hit_pathId[MAXHIT];
   //Int_t nrefl[MAXHIT];
-  
+
 } G4EventTree;
 
 #endif
