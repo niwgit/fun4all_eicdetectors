@@ -318,25 +318,57 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       G4String postPointVolName = postPoint->GetPhysicalVolume()->GetName();
 
       int prepointstatus = prePoint->GetStepStatus();
-      std::cout << prePointVolName << prepointstatus << std::endl;
-      int m_EdepSum = 0;
+      //std::cout << prePointVolName << prepointstatus << std::endl;
+
+      if (!m_PrtHit)
+      {
+        m_PrtHit = new PrtHit();
+      }
+
+      // set the initial energy deposit
+      m_EdepSum = 0;
+      if (whichactive > 0)
+      {
+        m_EionSum = 0;  // assuming the ionization energy is only needed for active
+        // volumes (scintillators)
+        m_PrtHit->set_eion(0);
+        m_SaveHitContainer = m_HitContainer;
+      }
+      else
+      {
+        std::cout << "implement stuff for whichactive < 0 (inactive volumes)" << std::endl;
+        gSystem->Exit(1);
+      }
+      // this is for the tracking of the truth info
+      if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
+      {
+        if (PHG4TrackUserInfoV1 *pp = dynamic_cast<PHG4TrackUserInfoV1 *>(p))
+        {
+          m_PrtHit->set_trkid(pp->GetUserTrackId());
+          pp->GetShower()->add_g4hit_id(m_SaveHitContainer->GetID(),
+                                        m_PrtHit->get_hit_id());
+        }
+      }
+
+      m_EdepSum += edep;
+      if (whichactive > 0)
+      {
+        m_EionSum += eion;
+      }
 
       if (prepointstatus == fGeomBoundary)
       {
         const G4DynamicParticle *dynParticle = aTrack->GetDynamicParticle();
         G4ParticleDefinition *particle = dynParticle->GetDefinition();
         G4String ParticleName = particle->GetParticleName();
-        std::cout << "test1"
-                  << "\t" << whichactive_int << "\t" << ParticleName << "\t" << aTrack->GetParentID() << std::endl;
 
         if ((whichactive_int == 2) && (aTrack->GetParentID() == 0) && (ParticleName == "mu+"))
         {
-          std::cout << "test2" << std::endl;
-          if (!m_PrtHit)
+          /*if (!m_PrtHit)
           {
             m_PrtHit = new PrtHit();
             std::cout << "test3" << std::endl;
-          }
+	    }*/
 
           //G4double edep = aStep->GetTotalEnergyDeposit() / GeV;
 
@@ -363,29 +395,32 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
             }
           }
 
-          if (geantino)
+          if (m_EdepSum > 0 || geantino)
           {
-            m_PrtHit->set_edep(-1);  // only energy=0 g4hits get dropped, this way
-            // geantinos survive the g4hit compression
+            if (geantino)
+            {
+              m_PrtHit->set_edep(-1);  // only energy=0 g4hits get dropped, this way
+              // geantinos survive the g4hit compression
+              if (whichactive > 0)
+              {
+                m_PrtHit->set_eion(-1);
+              }
+            }
+            else
+            {
+              //edep = aStep->GetTotalEnergyDeposit() / GeV;
+              //m_PrtHit->set_edep(m_PrtHit->get_edep() + edep);
+              m_PrtHit->set_edep(m_EdepSum);
+            }
             if (whichactive > 0)
             {
-              m_PrtHit->set_eion(-1);
+              //m_PrtHit->set_eion(m_EionSum);
+              //m_Hit->set_eion(m_Hit->get_eion() + eion);
+              m_PrtHit->set_eion(m_EionSum);
             }
-          }
-          else
-          {
-            edep = aStep->GetTotalEnergyDeposit() / GeV;
-            m_PrtHit->set_edep(m_PrtHit->get_edep() + edep);
-          }
-          if (whichactive > 0)
-          {
-            m_PrtHit->set_eion(m_EionSum);
-          }
 
-          std::cout << "test4" << std::endl;
-
-          if (m_PrtHit->get_edep())
-          {
+            //if (m_PrtHit->get_edep())
+            //{
             m_SaveHitContainer->AddHit(detector_id, m_PrtHit);
 
             // ownership has been transferred to container, set to null
@@ -402,13 +437,12 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
             m_PrtHit->Reset();
           }
         }
-      }
 
-      // return true to indicate the hit was used
-      return true;
+        // return true to indicate the hit was used
+        return true;
+      }
     }
   }
-
   else
   {
     return false;
