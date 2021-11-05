@@ -438,9 +438,12 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   if(fLensId == 3){ // 3-component spherical lens
     double lensMinThikness = 2; 
   
-    double r1 = 47.8;//0; 
-    double r2 = 29.1;//0; 
+    //double r1 = 47.8;//0; 
+    //double r2 = 29.1;//0; 
   
+    double r1 = 62;
+    double r2 = 36;
+
     //r1 = (r1==0)? 47.8: r1;
     //r2 = (r2==0)? 29.1: r2;
     // r1=80;
@@ -477,7 +480,8 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
     
     lLens1 = new G4LogicalVolume(gLens1,BarMaterial,"lLens1",0,0,0);
     m_LogicalVolumes_active[lLens1] = 6;    
-    lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0); //Nlak33aMaterial //PbF2Material //SapphireMaterial
+    //lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0); //Nlak33aMaterial //PbF2Material //SapphireMaterial
+    lLens2 = new G4LogicalVolume(gLens2,SapphireMaterial,"lLens2",0,0,0);
     m_LogicalVolumes_active[lLens2] = 7;
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
     m_LogicalVolumes_active[lLens3] = 8;    
@@ -956,13 +960,13 @@ void G4EicDircDetector::DefineMaterials()
   if (m_Params->get_int_param("disable_photon_sim") == 0)
     {
       // option disable photon simulation if explicitly set via macro
-      static bool once = true;
+      /*static bool once = true;
       if (once)
 	{
 	  once = false;
 	  std::cout << __PRETTY_FUNCTION__ << " : warning parameter disable_photon_sim = " << m_Params->get_int_param("disable_photon_sim")
 		    << " and photon simulation is disabled in DIRC!" << std::endl;
-	}
+		    }*/
 
       // Quartz material => Si02
       G4MaterialPropertiesTable* QuartzMPT = new G4MaterialPropertiesTable();

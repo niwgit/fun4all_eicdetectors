@@ -39,8 +39,8 @@ class G4EicDircSteppingAction : public PHG4SteppingAction
   void SetSupportNodeName(const std::string& nam) { m_SupportNodeName = nam; }
 
   
-  std::vector<Int_t> vector_nid;
-  std::vector<Int_t> vector_trackid;
+  //std::vector<Int_t> vector_nid;
+  //std::vector<Int_t> vector_trackid;
 
   //std::vector<Int_t> vector_bar_hit_trackid;
   //std::vector<TVector3> vector_p_bar;

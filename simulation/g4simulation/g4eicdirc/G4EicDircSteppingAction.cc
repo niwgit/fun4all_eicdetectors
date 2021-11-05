@@ -317,8 +317,8 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       G4String prePointVolName = prePoint->GetPhysicalVolume()->GetName();
       G4String postPointVolName = postPoint->GetPhysicalVolume()->GetName();
 
-      int prepointstatus = prePoint->GetStepStatus();
-      //std::cout << prePointVolName << prepointstatus << std::endl;
+      /* int prepointstatus = prePoint->GetStepStatus();
+      std::cout << prePointVolName << prepointstatus << std::endl;
 
       if (!m_PrtHit)
       {
@@ -362,16 +362,8 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
         G4ParticleDefinition *particle = dynParticle->GetDefinition();
         G4String ParticleName = particle->GetParticleName();
 
-        if ((whichactive_int == 2) && (aTrack->GetParentID() == 0) && (ParticleName == "mu+"))
-        {
-          /*if (!m_PrtHit)
-          {
-            m_PrtHit = new PrtHit();
-            std::cout << "test3" << std::endl;
-	    }*/
-
-          //G4double edep = aStep->GetTotalEnergyDeposit() / GeV;
-
+        if ((whichactive_int == 2) && (aTrack->GetParentID() == 0) && (ParticleName == "pi+"))
+        {          
           double bar_hit_time = prePoint->GetGlobalTime();
           G4ThreeVector track_pos = prePoint->GetPosition();
           G4ThreeVector mom_track = prePoint->GetMomentum();
@@ -449,9 +441,9 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   }
 
   return false;
-}
+  }*/
 
-/*switch (prePoint->GetStepStatus())
+      switch (prePoint->GetStepStatus())
 	{
 	case fPostStepDoItProc:
 	  if (m_SavePostStepStatus != fGeomBoundary)
@@ -484,7 +476,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 	  if (!m_PrtHit)
 	    {
 	      m_PrtHit = new PrtHit();
-	      }*/
+	    }
 
 // for momentum direction at bar
 //if((prePointVolName.contains("wBar")) && (aStep->IsFirstStepInVolume()) && (aTrack->GetParentID() == 0))
@@ -493,7 +485,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 // ownership has been transferred to container, set to null
 // so we will create a new hit for the next track
 
-/*m_PrtHit->set_layer(detector_id);
+	  m_PrtHit->set_layer(detector_id);
 	  // here we set the entrance values in cm
 	  m_PrtHit->set_x(0, prePoint->GetPosition().x() / cm);
 	  m_PrtHit->set_y(0, prePoint->GetPosition().y() / cm);
@@ -581,7 +573,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 	{
 	  m_EionSum += eion;
 	}
-*/
+
 
 // if any of these conditions is true this is the last step in
 // this volume and we need to save the hit
@@ -592,14 +584,14 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 // aTrack->GetTrackStatus() == fStopAndKill is also set)
 // aTrack->GetTrackStatus() == fStopAndKill: track ends
 
-/*if (postPoint->GetStepStatus() == fGeomBoundary ||
+if (postPoint->GetStepStatus() == fGeomBoundary ||
       postPoint->GetStepStatus() == fWorldBoundary ||
       postPoint->GetStepStatus() == fAtRestDoItProc ||
       aTrack->GetTrackStatus() == fStopAndKill)
     {       
     //if((prePoint->GetStepStatus() == fGeomBoundary) && 
     //if(whichactive_int == 9 || whichactive_int == 7 || whichactive_int == 8) // for relection information (7-wLens2, 8-wLens3, 9-wPrizm) 
-    if(whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
+      /*if(whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
       {	 
 	  G4String vname = touch->GetVolume()->GetName();
 	     
@@ -647,7 +639,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
 // save only hits with energy deposit (or geantino)
 
-/*if (m_EdepSum > 0 || geantino)
+      if (m_EdepSum > 0 || geantino)
       {
       // update values at exit coordinates and set keep flag
       // of track to keep
@@ -658,28 +650,15 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       m_PrtHit->set_t(1, postPoint->GetGlobalTime() / nanosecond);
             	      
       if(whichactive_int_post == 11) // post step in Pixel ---------------
-      //if(whichactive_int == 2) //&& (aStep->IsFirstStepInVolume()))// && (aTrack->GetParentID() == 0))
-      {*/
+	{
+	  // Get cell id
+	  /*G4int layerNumber = touchpost->GetReplicaNumber(0);
+	  const G4DynamicParticle* dynParticle = aTrack->GetDynamicParticle();
+	  G4ParticleDefinition* particle = dynParticle->GetDefinition();  
+	  G4String ParticleName = particle->GetParticleName();
+	  */
 
-// Get cell id
-/*G4int layerNumber = touchpost->GetReplicaNumber(0);
-      const G4DynamicParticle* dynParticle = aTrack->GetDynamicParticle();
-      G4ParticleDefinition* particle = dynParticle->GetDefinition();  
-      G4String ParticleName = particle->GetParticleName();
-
-      
-      if((aTrack->GetParentID() == 0) && (ParticleName == "pi+"))
-      {
-
-      double time = aStep->GetPreStepPoint()->GetGlobalTime();
-      G4ThreeVector mom_track = aTrack->GetMomentum();
-      G4ThreeVector z_axis(0,0,1);
-      double angle_track = mom_track.angle(z_axis);
-
-      m_PrtHit->SetAngleTrack(angle_track);
-      */
-
-/*G4ThreeVector globalpos = aStep->GetPostStepPoint()->GetPosition();
+      G4ThreeVector globalpos = aStep->GetPostStepPoint()->GetPosition();
       G4ThreeVector localpos = touchpost->GetHistory()->GetTopTransform().TransformPoint(globalpos);
       G4ThreeVector translation = touchpost->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector(0,0,0));
       G4ThreeVector inPrismpos = touchpost->GetHistory()->GetTransform( 1 ).TransformPoint(globalpos);
@@ -694,7 +673,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       TVector3 momentum(g4mom.x(),g4mom.y(),g4mom.z());
       TVector3 position(g4pos.x(),g4pos.y(),g4pos.z());
 
-      double time = aStep->GetPostStepPoint()->GetLocalTime();
+      double time = aStep->GetPreStepPoint()->GetLocalTime();
 
       int mcp = touchpost->GetReplicaNumber(1);
       int pix = touchpost->GetReplicaNumber(0);     
@@ -738,7 +717,62 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       m_PrtHit->SetDigiPos(digiPos);
       m_PrtHit->SetPosition(position);
       m_PrtHit->SetMomentum(momentum);
-      */
+      
+      if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
+	{
+	  if (PHG4TrackUserInfoV1 *pp = dynamic_cast<PHG4TrackUserInfoV1 *>(p))
+	    {
+	      pp->SetKeep(1);  // we want to keep the track
+	    }
+	}
+      if (geantino)
+	{
+	  m_PrtHit->set_edep(-1);  // only energy=0 g4hits get dropped, this way
+	  // geantinos survive the g4hit compression
+	  if (whichactive > 0)
+	    {
+	      m_PrtHit->set_eion(-1);
+	    }
+	}
+      else
+	{
+	  m_PrtHit->set_edep(m_EdepSum);
+	}
+      if (whichactive > 0)
+	{
+	  m_PrtHit->set_eion(m_EionSum);
+	}
+      
+      m_SaveHitContainer->AddHit(detector_id, m_PrtHit);
+      
+      // ownership has been transferred to container, set to null
+      // so we will create a new hit for the next track
+      //m_Hit = nullptr;
+      m_PrtHit = nullptr;
+	}
+      }
+ 
+ else
+   {
+     // if this hit has no energy deposit, just reset it for reuse
+     // this means we have to delete it in the dtor. If this was
+     // the last hit we processed the memory is still allocated
+     m_PrtHit->Reset();
+   }
+    }
+ 
+// return true to indicate the hit was used
+ return true;
+    }
+  }
+
+  else
+    {
+      return false;
+    }
+  return false;
+}
+
 //int refl = 0;
 //Int_t normal_id = 0;
 //Long64_t pathId = 0;

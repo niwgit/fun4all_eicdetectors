@@ -54,32 +54,32 @@ int G4DIRCTree::Init(PHCompositeNode *)
   g4tree->Branch("detid", mG4EvtTree.detid, "detid[nhits]/I");
   g4tree->Branch("hitid", mG4EvtTree.hitid, "hitid[nhits]/I");
   g4tree->Branch("trkid", mG4EvtTree.trkid, "trkid[nhits]/I");
-  /*g4tree->Branch("x0", mG4EvtTree.x0, "x0[nhits]/D");
+  g4tree->Branch("x0", mG4EvtTree.x0, "x0[nhits]/D");
   g4tree->Branch("y0", mG4EvtTree.y0, "y0[nhits]/D");
   g4tree->Branch("z0", mG4EvtTree.z0, "z0[nhits]/D");
   g4tree->Branch("x1", mG4EvtTree.x1, "x1[nhits]/D");
   g4tree->Branch("y1", mG4EvtTree.y1, "y1[nhits]/D");
-  g4tree->Branch("z1", mG4EvtTree.z1, "z1[nhits]/D");*/
+  g4tree->Branch("z1", mG4EvtTree.z1, "z1[nhits]/D");
   g4tree->Branch("edep", mG4EvtTree.edep, "edep[nhits]/D");
 
-  g4tree->Branch("track_angle_at_bar", mG4EvtTree.track_angle_at_bar, "track_angle_at_bar[nhits]/D");
+  /*g4tree->Branch("track_angle_at_bar", mG4EvtTree.track_angle_at_bar, "track_angle_at_bar[nhits]/D");
   g4tree->Branch("track_phi", mG4EvtTree.track_phi, "track_phi[nhits]/D");
   g4tree->Branch("bar_hit_time", mG4EvtTree.bar_hit_time, "bar_hit_time[nhits]/D");
   g4tree->Branch("track_mom", mG4EvtTree.track_mom, "track_mom[nhits][3]/D");
-  g4tree->Branch("track_pos", mG4EvtTree.track_pos, "track_pos[nhits][3]/D");
+  g4tree->Branch("track_pos", mG4EvtTree.track_pos, "track_pos[nhits][3]/D");*/
 
-  //g4tree->Branch("mcp_id", mG4EvtTree.mcp_id, "mcp_id[nhits]/I");
-  //g4tree->Branch("pixel_id", mG4EvtTree.pixel_id, "pixel_id[nhits]/I");
-  //g4tree->Branch("lead_time", mG4EvtTree.lead_time,"lead_time[nhits]/D");
-  //g4tree->Branch("wavelength", mG4EvtTree.wavelength,"wavelength[nhits]/D");
+  g4tree->Branch("mcp_id", mG4EvtTree.mcp_id, "mcp_id[nhits]/I");
+  g4tree->Branch("pixel_id", mG4EvtTree.pixel_id, "pixel_id[nhits]/I");
+  g4tree->Branch("lead_time", mG4EvtTree.lead_time,"lead_time[nhits]/D");
+  g4tree->Branch("wavelength", mG4EvtTree.wavelength,"wavelength[nhits]/D");
   //g4tree->Branch("hit_pathId", mG4EvtTree.hit_pathId, "hit_pathId[nhits]/L");
   //g4tree->Branch("nrefl", mG4EvtTree.nrefl, "nrefl[nhits]/I");
 
-  //g4tree->Branch("hit_globalPos", mG4EvtTree.hit_globalPos, "hit_globalPos[nhits][3]/D");
-  //g4tree->Branch("hit_localPos", mG4EvtTree.hit_localPos, "hit_localPos[nhits][3]/D");
-  //g4tree->Branch("hit_digiPos", mG4EvtTree.hit_digiPos, "hit_digiPos[nhits][3]/D");
-  //g4tree->Branch("hit_mom", mG4EvtTree.hit_mom, "hit_mom[nhits][3]/D");
-  //g4tree->Branch("hit_pos", mG4EvtTree.hit_pos, "hit_pos[nhits][3]/D");
+  g4tree->Branch("hit_globalPos", mG4EvtTree.hit_globalPos, "hit_globalPos[nhits][3]/D");
+  g4tree->Branch("hit_localPos", mG4EvtTree.hit_localPos, "hit_localPos[nhits][3]/D");
+  g4tree->Branch("hit_digiPos", mG4EvtTree.hit_digiPos, "hit_digiPos[nhits][3]/D");
+  g4tree->Branch("hit_mom", mG4EvtTree.hit_mom, "hit_mom[nhits][3]/D");
+  g4tree->Branch("hit_pos", mG4EvtTree.hit_pos, "hit_pos[nhits][3]/D");
   //g4tree->Branch("track_mom_bar", mG4EvtTree.track_mom_bar, "track_mom_bar[nhits][3]/D");
   //g4tree->Branch("track_hit_pos_bar", mG4EvtTree.track_hit_pos_bar, "track_hit_pos_bar[nhits][3]/D");
 
@@ -172,34 +172,35 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
       mG4EvtTree.hitid[nhits] = dirc_hit->get_hit_id();
       mG4EvtTree.trkid[nhits] = dirc_hit->get_trkid();
 
-      /*mG4EvtTree.x0[nhits] = dirc_hit->get_x(0);
+      mG4EvtTree.x0[nhits] = dirc_hit->get_x(0);
       mG4EvtTree.y0[nhits] = dirc_hit->get_y(0);
       mG4EvtTree.z0[nhits] = dirc_hit->get_z(0);
       mG4EvtTree.x1[nhits] = dirc_hit->get_x(1);
       mG4EvtTree.y1[nhits] = dirc_hit->get_y(1);
-      mG4EvtTree.z1[nhits] = dirc_hit->get_z(1);*/
+      mG4EvtTree.z1[nhits] = dirc_hit->get_z(1);
       mG4EvtTree.edep[nhits] = dirc_hit->get_edep();
 
-      mG4EvtTree.track_angle_at_bar[nhits] = dirc_hit->GetAngleTrack();
-      mG4EvtTree.track_phi[nhits] = dirc_hit->GetMomentum().Phi();
-      mG4EvtTree.bar_hit_time[nhits] = dirc_hit->GetBarHitTime();
-      //mG4EvtTree.mcp_id[nhits] = dirc_hit->GetMcpId();
-      //mG4EvtTree.pixel_id[nhits] = dirc_hit->GetPixelId();
-      //mG4EvtTree.lead_time[nhits] = dirc_hit->GetLeadTime();
-      //mG4EvtTree.wavelength[nhits] = dirc_hit->GetTotTime();
+      //mG4EvtTree.track_angle_at_bar[nhits] = dirc_hit->GetAngleTrack();
+      //mG4EvtTree.track_phi[nhits] = dirc_hit->GetMomentum().Phi();
+      //mG4EvtTree.bar_hit_time[nhits] = dirc_hit->GetBarHitTime();
+      
+      mG4EvtTree.mcp_id[nhits] = dirc_hit->GetMcpId();
+      mG4EvtTree.pixel_id[nhits] = dirc_hit->GetPixelId();
+      mG4EvtTree.lead_time[nhits] = dirc_hit->GetLeadTime();
+      mG4EvtTree.wavelength[nhits] = dirc_hit->GetTotTime();
       //mG4EvtTree.hit_pathId[nhits] = dirc_hit->GetPathInPrizm();
       //mG4EvtTree.nrefl[nhits] = dirc_hit->GetNreflectionsInPrizm();
 
       for (int i = 0; i < 3; i++)
       {
-        mG4EvtTree.track_mom[nhits][i] = dirc_hit->GetMomentum()(i);
-        mG4EvtTree.track_pos[nhits][i] = dirc_hit->GetPosition()(i);
-        /*mG4EvtTree.hit_globalPos[nhits][i] = dirc_hit->GetGlobalPos()(i);
-          mG4EvtTree.hit_localPos[nhits][i] = dirc_hit->GetLocalPos()(i);
-          mG4EvtTree.hit_digiPos[nhits][i] = dirc_hit->GetDigiPos()(i);
-          mG4EvtTree.hit_mom[nhits][i] = dirc_hit->GetMomentum()(i);
-          mG4EvtTree.hit_pos[nhits][i] = dirc_hit->GetPosition()(i);	    
-	  */
+        //mG4EvtTree.track_mom[nhits][i] = dirc_hit->GetMomentum()(i);
+        //mG4EvtTree.track_pos[nhits][i] = dirc_hit->GetPosition()(i);
+        mG4EvtTree.hit_globalPos[nhits][i] = dirc_hit->GetGlobalPos()(i);
+	mG4EvtTree.hit_localPos[nhits][i] = dirc_hit->GetLocalPos()(i);
+	mG4EvtTree.hit_digiPos[nhits][i] = dirc_hit->GetDigiPos()(i);
+	mG4EvtTree.hit_mom[nhits][i] = dirc_hit->GetMomentum()(i);
+	mG4EvtTree.hit_pos[nhits][i] = dirc_hit->GetPosition()(i);	    
+	  
       }
 
       nhits++;
