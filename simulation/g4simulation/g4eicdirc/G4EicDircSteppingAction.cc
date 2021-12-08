@@ -444,121 +444,121 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   }*/
 
       switch (prePoint->GetStepStatus())
-	{
-	case fPostStepDoItProc:
-	  if (m_SavePostStepStatus != fGeomBoundary)
-	    {
-	      break;
-	    }
-	  else
-	    {
-	      // this is bad from G4 print out diagnostic to help debug, not sure if
-	      // this is still with us
-	      std::cout << GetName() << ": New Hit for  " << std::endl;
-	      std::cout << "prestep status: "
-			<< PHG4StepStatusDecode::GetStepStatus(prePoint->GetStepStatus())
-			<< ", poststep status: "
-			<< PHG4StepStatusDecode::GetStepStatus(postPoint->GetStepStatus())
-			<< ", last pre step status: "
-			<< PHG4StepStatusDecode::GetStepStatus(m_SavePreStepStatus)
-			<< ", last post step status: "
-			<< PHG4StepStatusDecode::GetStepStatus(m_SavePostStepStatus) << std::endl;
-	      std::cout << "last track: " << m_SaveTrackId
-			<< ", current trackid: " << aTrack->GetTrackID() << std::endl;
-	      std::cout << "phys pre vol: " << volume->GetName()
-			<< " post vol : " << touchpost->GetVolume()->GetName() << std::endl;
-	      std::cout << " previous phys pre vol: " << m_SaveVolPre->GetName()
-			<< " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
-	    }
- 
-	case fGeomBoundary:
-	case fUndefined:
-	  if (!m_PrtHit)
-	    {
-	      m_PrtHit = new PrtHit();
-	    }
+      {
+      case fPostStepDoItProc:
+        if (m_SavePostStepStatus != fGeomBoundary)
+        {
+          break;
+        }
+        else
+        {
+          // this is bad from G4 print out diagnostic to help debug, not sure if
+          // this is still with us
+          std::cout << GetName() << ": New Hit for  " << std::endl;
+          std::cout << "prestep status: "
+                    << PHG4StepStatusDecode::GetStepStatus(prePoint->GetStepStatus())
+                    << ", poststep status: "
+                    << PHG4StepStatusDecode::GetStepStatus(postPoint->GetStepStatus())
+                    << ", last pre step status: "
+                    << PHG4StepStatusDecode::GetStepStatus(m_SavePreStepStatus)
+                    << ", last post step status: "
+                    << PHG4StepStatusDecode::GetStepStatus(m_SavePostStepStatus) << std::endl;
+          std::cout << "last track: " << m_SaveTrackId
+                    << ", current trackid: " << aTrack->GetTrackID() << std::endl;
+          std::cout << "phys pre vol: " << volume->GetName()
+                    << " post vol : " << touchpost->GetVolume()->GetName() << std::endl;
+          std::cout << " previous phys pre vol: " << m_SaveVolPre->GetName()
+                    << " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
+        }
 
-// for momentum direction at bar
-//if((prePointVolName.contains("wBar")) && (aStep->IsFirstStepInVolume()) && (aTrack->GetParentID() == 0))
+      case fGeomBoundary:
+      case fUndefined:
+        if (!m_PrtHit)
+        {
+          m_PrtHit = new PrtHit();
+        }
 
-//m_SaveHitContainer->AddHit(detector_id, m_Hit);
-// ownership has been transferred to container, set to null
-// so we will create a new hit for the next track
+        // for momentum direction at bar
+        //if((prePointVolName.contains("wBar")) && (aStep->IsFirstStepInVolume()) && (aTrack->GetParentID() == 0))
 
-	  m_PrtHit->set_layer(detector_id);
-	  // here we set the entrance values in cm
-	  m_PrtHit->set_x(0, prePoint->GetPosition().x() / cm);
-	  m_PrtHit->set_y(0, prePoint->GetPosition().y() / cm);
-	  m_PrtHit->set_z(0, prePoint->GetPosition().z() / cm);
-	  // time in ns
-	  m_PrtHit->set_t(0, prePoint->GetGlobalTime() / nanosecond);
-	  // set the track ID
-	  m_PrtHit->set_trkid(aTrack->GetTrackID());
-	  m_SaveTrackId = aTrack->GetTrackID();
+        //m_SaveHitContainer->AddHit(detector_id, m_Hit);
+        // ownership has been transferred to container, set to null
+        // so we will create a new hit for the next track
 
-	  // set the initial energy deposit
-	  m_EdepSum = 0;
-	  if (whichactive > 0)
-	    {
-	      m_EionSum = 0;  // assuming the ionization energy is only needed for active
-	                     // volumes (scintillators)
-	      m_PrtHit->set_eion(0);
-	      m_SaveHitContainer = m_HitContainer;
-	    }
-	  else
-	    {
-	      std::cout << "implement stuff for whichactive < 0 (inactive volumes)" << std::endl;
-	      gSystem->Exit(1);
-	    }
-	  // this is for the tracking of the truth info
-	  if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
-	    {
-	      if (PHG4TrackUserInfoV1 *pp = dynamic_cast<PHG4TrackUserInfoV1 *>(p))
-		{
-		  m_PrtHit->set_trkid(pp->GetUserTrackId());
-		  pp->GetShower()->add_g4hit_id(m_SaveHitContainer->GetID(),
-						m_PrtHit->get_hit_id());
-		}
-	    }
+        m_PrtHit->set_layer(detector_id);
+        // here we set the entrance values in cm
+        m_PrtHit->set_x(0, prePoint->GetPosition().x() / cm);
+        m_PrtHit->set_y(0, prePoint->GetPosition().y() / cm);
+        m_PrtHit->set_z(0, prePoint->GetPosition().z() / cm);
+        // time in ns
+        m_PrtHit->set_t(0, prePoint->GetGlobalTime() / nanosecond);
+        // set the track ID
+        m_PrtHit->set_trkid(aTrack->GetTrackID());
+        m_SaveTrackId = aTrack->GetTrackID();
 
-	  break;
-	default:
-	  break;
-	}
+        // set the initial energy deposit
+        m_EdepSum = 0;
+        if (whichactive > 0)
+        {
+          m_EionSum = 0;  // assuming the ionization energy is only needed for active
+                          // volumes (scintillators)
+          m_PrtHit->set_eion(0);
+          m_SaveHitContainer = m_HitContainer;
+        }
+        else
+        {
+          std::cout << "implement stuff for whichactive < 0 (inactive volumes)" << std::endl;
+          gSystem->Exit(1);
+        }
+        // this is for the tracking of the truth info
+        if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
+        {
+          if (PHG4TrackUserInfoV1 *pp = dynamic_cast<PHG4TrackUserInfoV1 *>(p))
+          {
+            m_PrtHit->set_trkid(pp->GetUserTrackId());
+            pp->GetShower()->add_g4hit_id(m_SaveHitContainer->GetID(),
+                                          m_PrtHit->get_hit_id());
+          }
+        }
+
+        break;
+      default:
+        break;
+      }
       //cout << "detector id = " << detector_id << endl;
 
       // some sanity checks for inconsistencies (aka bugs)
       // check if this hit was created, if not print out last post step status
       if (!m_PrtHit || !isfinite(m_PrtHit->get_x(0)))
-	{
-	  std::cout << GetName() << ": hit was not created" << std::endl;
-	  std::cout << "prestep status: "
-		    << PHG4StepStatusDecode::GetStepStatus(prePoint->GetStepStatus())
-		    << ", poststep status: "
-		    << PHG4StepStatusDecode::GetStepStatus(postPoint->GetStepStatus())
-		    << ", last pre step status: "
-		    << PHG4StepStatusDecode::GetStepStatus(m_SavePreStepStatus)
-		    << ", last post step status: "
-		    << PHG4StepStatusDecode::GetStepStatus(m_SavePostStepStatus) << std::endl;
-	  std::cout << "last track: " << m_SaveTrackId
-		    << ", current trackid: " << aTrack->GetTrackID() << std::endl;
-	  std::cout << "phys pre vol: " << volume->GetName()
-		    << " post vol : " << touchpost->GetVolume()->GetName() << std::endl;
-	  std::cout << " previous phys pre vol: " << m_SaveVolPre->GetName()
-		    << " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
-	  gSystem->Exit(1);
-	}
+      {
+        std::cout << GetName() << ": hit was not created" << std::endl;
+        std::cout << "prestep status: "
+                  << PHG4StepStatusDecode::GetStepStatus(prePoint->GetStepStatus())
+                  << ", poststep status: "
+                  << PHG4StepStatusDecode::GetStepStatus(postPoint->GetStepStatus())
+                  << ", last pre step status: "
+                  << PHG4StepStatusDecode::GetStepStatus(m_SavePreStepStatus)
+                  << ", last post step status: "
+                  << PHG4StepStatusDecode::GetStepStatus(m_SavePostStepStatus) << std::endl;
+        std::cout << "last track: " << m_SaveTrackId
+                  << ", current trackid: " << aTrack->GetTrackID() << std::endl;
+        std::cout << "phys pre vol: " << volume->GetName()
+                  << " post vol : " << touchpost->GetVolume()->GetName() << std::endl;
+        std::cout << " previous phys pre vol: " << m_SaveVolPre->GetName()
+                  << " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
+        gSystem->Exit(1);
+      }
       // check if track id matches the initial one when the hit was created
       if (aTrack->GetTrackID() != m_SaveTrackId)
-	{
-	  std::cout << GetName() << ": hits do not belong to the same track" << std::endl;
-	  std::cout << "saved track: " << m_SaveTrackId
-		    << ", current trackid: " << aTrack->GetTrackID()
-		    << ", prestep status: " << prePoint->GetStepStatus()
-		    << ", previous post step status: " << m_SavePostStepStatus << std::endl;
+      {
+        std::cout << GetName() << ": hits do not belong to the same track" << std::endl;
+        std::cout << "saved track: " << m_SaveTrackId
+                  << ", current trackid: " << aTrack->GetTrackID()
+                  << ", prestep status: " << prePoint->GetStepStatus()
+                  << ", previous post step status: " << m_SavePostStepStatus << std::endl;
 
-	  gSystem->Exit(1);
-	}
+        gSystem->Exit(1);
+      }
       m_SavePreStepStatus = prePoint->GetStepStatus();
       m_SavePostStepStatus = postPoint->GetStepStatus();
       m_SaveVolPre = volume;
@@ -570,233 +570,210 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       // sum up the energy to get total deposited
       m_EdepSum += edep;
       if (whichactive > 0)
-	{
-	  m_EionSum += eion;
-	}
-
-
-// if any of these conditions is true this is the last step in
-// this volume and we need to save the hit
-// postPoint->GetStepStatus() == fGeomBoundary: track leaves this volume
-// postPoint->GetStepStatus() == fWorldBoundary: track leaves this world
-// (happens when your detector goes outside world volume)
-// postPoint->GetStepStatus() == fAtRestDoItProc: track stops (typically
-// aTrack->GetTrackStatus() == fStopAndKill is also set)
-// aTrack->GetTrackStatus() == fStopAndKill: track ends
-
-if (postPoint->GetStepStatus() == fGeomBoundary ||
-      postPoint->GetStepStatus() == fWorldBoundary ||
-      postPoint->GetStepStatus() == fAtRestDoItProc ||
-      aTrack->GetTrackStatus() == fStopAndKill)
-    {       
-    //if((prePoint->GetStepStatus() == fGeomBoundary) && 
-    //if(whichactive_int == 9 || whichactive_int == 7 || whichactive_int == 8) // for relection information (7-wLens2, 8-wLens3, 9-wPrizm) 
-      /*if(whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
-      {	 
-	  G4String vname = touch->GetVolume()->GetName();
-	     
-	  // normal to the closest boundary
-	  G4Navigator* theNavigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
-
-	  Int_t nid = 0;	
-	  G4bool valid;
-	  G4ThreeVector normal = theNavigator->GetLocalExitNormal(&valid);
-	  G4ThreeVector gnormal = theNavigator->GetLocalToGlobalTransform().TransformAxis(-normal);
-	  normal = touch->GetHistory()->GetTransform(1).TransformAxis(gnormal); // in lDirc
-
-	  //Int_t prizm_hit_trackid = aTrack->GetTrackID();
-	  Int_t prizm_hit_trackid = m_SaveTrackId;
-  
-	  if (valid)
-	    {
-	      if(vname=="wPrizm")
-		{
-		  if(normal.y()> 0.99) nid = 1; // right
-		  if(normal.y()<-0.99) nid = 2; // left
-		  if(normal.x()>0.99) nid = 3; // bottom
-		  if(fabs(normal.x()+0.866025)<0.1 ) nid = 4;
-		}
-	      else if(vname=="wLens3")
-		{
-		  if(normal.y()> 0.99) nid = 5; // right
-		  if(normal.y()<-0.99) nid = 6; // left
-		  if(normal.x()>0.99) nid = 7; // bottom
-		  if(normal.x()<-0.99) nid = 8; // top
-		}
-	      else if(vname=="wLens2")
-		{
-		  nid = 9;
-		}
-	     
-	      if(nid > 0)
-		{		 
-		  vector_trackid.push_back(prizm_hit_trackid);
-		  vector_nid.push_back(nid);
-		}
-	     
-	    }
-	    }*/
-
-// save only hits with energy deposit (or geantino)
-
-      if (m_EdepSum > 0 || geantino)
       {
-      // update values at exit coordinates and set keep flag
-      // of track to keep
-      m_PrtHit->set_x(1, postPoint->GetPosition().x() / cm);
-      m_PrtHit->set_y(1, postPoint->GetPosition().y() / cm);
-      m_PrtHit->set_z(1, postPoint->GetPosition().z() / cm);
-
-      m_PrtHit->set_t(1, postPoint->GetGlobalTime() / nanosecond);
-            	      
-      if(whichactive_int_post == 11) // post step in Pixel ---------------
-	{
-	  // Get cell id
-	  /*G4int layerNumber = touchpost->GetReplicaNumber(0);
-	  const G4DynamicParticle* dynParticle = aTrack->GetDynamicParticle();
-	  G4ParticleDefinition* particle = dynParticle->GetDefinition();  
-	  G4String ParticleName = particle->GetParticleName();
-	  */
-
-      G4ThreeVector globalpos = aStep->GetPostStepPoint()->GetPosition();
-      G4ThreeVector localpos = touchpost->GetHistory()->GetTopTransform().TransformPoint(globalpos);
-      G4ThreeVector translation = touchpost->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector(0,0,0));
-      G4ThreeVector inPrismpos = touchpost->GetHistory()->GetTransform( 1 ).TransformPoint(globalpos);
-      G4ThreeVector g4mom = aTrack->GetVertexMomentumDirection();//GetMomentum();
-      G4ThreeVector g4pos = aTrack->GetVertexPosition();
- 
-      G4ThreeVector localvec = touchpost->GetHistory()->GetTopTransform().TransformAxis(g4mom);
-
-      TVector3 globalPos(inPrismpos.x(),inPrismpos.y(),inPrismpos.z());
-      TVector3 localPos(localpos.x(),localpos.y(),localpos.z());
-      TVector3 digiPos(translation.x(),translation.y(),translation.z());
-      TVector3 momentum(g4mom.x(),g4mom.y(),g4mom.z());
-      TVector3 position(g4pos.x(),g4pos.y(),g4pos.z());
-
-      double time = aStep->GetPreStepPoint()->GetLocalTime();
-
-      int mcp = touchpost->GetReplicaNumber(1);
-      int pix = touchpost->GetReplicaNumber(0);     
-     
-      Double_t wavelength = 1.2398/(aTrack->GetMomentum().mag()*1E6)*1000;
-      
-      // transport efficiency ----
-
-      double pi(4 * atan(1));
-      double roughness(0.5); // nm
-      double angleX = localvec.angle(G4ThreeVector(1, 0, 0));
-      double angleY = localvec.angle(G4ThreeVector(0, 1, 0));
-      if (angleX > 0.5 * pi) angleX = pi - angleX;
-      if (angleY > 0.5 * pi) angleY = pi - angleY;
-      double length = aTrack->GetTrackLength() - 400; // 400 - average path in EV
-      double lengthx = fabs(length * localvec.x());  // along the bar
-      double lengthy = fabs(length * localvec.y());
-
-      //cout << "track length = " << aTrack->GetTrackLength() << endl;
-
-      int nBouncesX = (int)(lengthx) / 17.25;
-      int nBouncesY = (int)(lengthy) / 35.0;
-
-      double ll = wavelength * wavelength;
-      double n_quartz = sqrt(1. + (0.696 * ll / (ll - pow(0.068, 2))) +
-			     (0.407 * ll / (ll - pow(0.116, 2))) + 0.897 * ll / (ll - pow(9.896, 2)));
-      double bounce_probX = 1 - pow(4 * pi * cos(angleX) * roughness * n_quartz / wavelength, 2);
-      double bounce_probY = 1 - pow(4 * pi * cos(angleY) * roughness * n_quartz / wavelength, 2);
-
-      double totalProb = pow(bounce_probX, nBouncesX) * pow(bounce_probY, nBouncesY);
-
-      if (G4UniformRand() > totalProb) return false;      
-      
-      // time since track created
-      m_PrtHit->SetLeadTime(time);	
-      m_PrtHit->SetTotTime(wavelength); //set photon wavelength
-      m_PrtHit->SetMcpId(mcp);
-      m_PrtHit->SetPixelId(pix);
-      m_PrtHit->SetGlobalPos(globalPos);
-      m_PrtHit->SetLocalPos(localPos);
-      m_PrtHit->SetDigiPos(digiPos);
-      m_PrtHit->SetPosition(position);
-      m_PrtHit->SetMomentum(momentum);
-      
-      if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
-	{
-	  if (PHG4TrackUserInfoV1 *pp = dynamic_cast<PHG4TrackUserInfoV1 *>(p))
-	    {
-	      pp->SetKeep(1);  // we want to keep the track
-	    }
-	}
-      if (geantino)
-	{
-	  m_PrtHit->set_edep(-1);  // only energy=0 g4hits get dropped, this way
-	  // geantinos survive the g4hit compression
-	  if (whichactive > 0)
-	    {
-	      m_PrtHit->set_eion(-1);
-	    }
-	}
-      else
-	{
-	  m_PrtHit->set_edep(m_EdepSum);
-	}
-      if (whichactive > 0)
-	{
-	  m_PrtHit->set_eion(m_EionSum);
-	}
-      
-      m_SaveHitContainer->AddHit(detector_id, m_PrtHit);
-      
-      // ownership has been transferred to container, set to null
-      // so we will create a new hit for the next track
-      //m_Hit = nullptr;
-      m_PrtHit = nullptr;
-	}
+        m_EionSum += eion;
       }
- 
- else
-   {
-     // if this hit has no energy deposit, just reset it for reuse
-     // this means we have to delete it in the dtor. If this was
-     // the last hit we processed the memory is still allocated
-     m_PrtHit->Reset();
-   }
-    }
- 
-// return true to indicate the hit was used
- return true;
+
+      // if any of these conditions is true this is the last step in
+      // this volume and we need to save the hit
+      // postPoint->GetStepStatus() == fGeomBoundary: track leaves this volume
+      // postPoint->GetStepStatus() == fWorldBoundary: track leaves this world
+      // (happens when your detector goes outside world volume)
+      // postPoint->GetStepStatus() == fAtRestDoItProc: track stops (typically
+      // aTrack->GetTrackStatus() == fStopAndKill is also set)
+      // aTrack->GetTrackStatus() == fStopAndKill: track ends
+
+      if (postPoint->GetStepStatus() == fGeomBoundary ||
+          postPoint->GetStepStatus() == fWorldBoundary ||
+          postPoint->GetStepStatus() == fAtRestDoItProc ||
+          aTrack->GetTrackStatus() == fStopAndKill)
+      {
+        if ((whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) && (postPoint->GetStepStatus() == fGeomBoundary))  // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
+        {
+          // normal to the closest boundary
+          G4Navigator *theNavigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
+
+          Int_t nid = 0;
+          G4bool valid;
+          G4ThreeVector normal = theNavigator->GetLocalExitNormal(&valid);
+          G4ThreeVector gnormal = theNavigator->GetLocalToGlobalTransform().TransformAxis(-normal);
+          normal = touch->GetHistory()->GetTransform(1).TransformAxis(gnormal);  // in lDirc
+
+          if (valid)
+          {
+            if (whichactive_int == 9)  // Prizm
+            {
+              if (normal.y() > 0.99) nid = 1;   // right
+              if (normal.y() < -0.99) nid = 2;  // left
+              if (normal.x() > 0.99) nid = 3;   // bottom
+              if (fabs(normal.x() + 0.866025) < 0.1) nid = 4;
+            }
+            else if (whichactive_int == 8)  // Lens3
+            {
+              if (normal.y() > 0.99) nid = 5;   // right
+              if (normal.y() < -0.99) nid = 6;  // left
+              if (normal.x() > 0.99) nid = 7;   // bottom
+              if (normal.x() < -0.99) nid = 8;  // top
+            }
+            else if (whichactive_int == 7)  // Lens2
+            {
+              nid = 9;
+            }
+
+            if (nid > 0) vector_nid.push_back(nid);
+          }
+        }
+
+        // save only hits with energy deposit (or geantino)
+
+        if (m_EdepSum > 0 || geantino)
+        {
+          // update values at exit coordinates and set keep flag
+          // of track to keep
+          m_PrtHit->set_x(1, postPoint->GetPosition().x() / cm);
+          m_PrtHit->set_y(1, postPoint->GetPosition().y() / cm);
+          m_PrtHit->set_z(1, postPoint->GetPosition().z() / cm);
+
+          m_PrtHit->set_t(1, postPoint->GetGlobalTime() / nanosecond);
+
+          if (whichactive_int_post == 11)  // post step in Pixel ---------------
+          {
+            G4ThreeVector globalpos = aStep->GetPostStepPoint()->GetPosition();
+            G4ThreeVector localpos = touchpost->GetHistory()->GetTopTransform().TransformPoint(globalpos);
+            G4ThreeVector translation = touchpost->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector(0, 0, 0));
+            G4ThreeVector inPrismpos = touchpost->GetHistory()->GetTransform(1).TransformPoint(globalpos);
+            G4ThreeVector g4mom = aTrack->GetVertexMomentumDirection();  //GetMomentum();
+            G4ThreeVector g4pos = aTrack->GetVertexPosition();
+
+            G4ThreeVector localvec = touchpost->GetHistory()->GetTopTransform().TransformAxis(g4mom);
+
+            TVector3 globalPos(inPrismpos.x(), inPrismpos.y(), inPrismpos.z());
+            TVector3 localPos(localpos.x(), localpos.y(), localpos.z());
+            TVector3 digiPos(translation.x(), translation.y(), translation.z());
+            TVector3 momentum(g4mom.x(), g4mom.y(), g4mom.z());
+            TVector3 position(g4pos.x(), g4pos.y(), g4pos.z());
+
+            double time = aStep->GetPreStepPoint()->GetLocalTime();
+
+            int mcp = touchpost->GetReplicaNumber(1);
+            int pix = touchpost->GetReplicaNumber(0);
+
+            Double_t wavelength = 1.2398 / (aTrack->GetMomentum().mag() * 1E6) * 1000;
+
+            // transport efficiency ----
+
+            double pi(4 * atan(1));
+            double roughness(0.5);  // nm
+            double angleX = localvec.angle(G4ThreeVector(1, 0, 0));
+            double angleY = localvec.angle(G4ThreeVector(0, 1, 0));
+            if (angleX > 0.5 * pi) angleX = pi - angleX;
+            if (angleY > 0.5 * pi) angleY = pi - angleY;
+            double length = aTrack->GetTrackLength() - 400;  // 400 - average path in EV
+            double lengthx = fabs(length * localvec.x());    // along the bar
+            double lengthy = fabs(length * localvec.y());
+
+            //cout << "track length = " << aTrack->GetTrackLength() << endl;
+
+            int nBouncesX = (int) (lengthx) / 17.25;
+            int nBouncesY = (int) (lengthy) / 35.0;
+
+            double ll = wavelength * wavelength;
+            double n_quartz = sqrt(1. + (0.696 * ll / (ll - pow(0.068, 2))) +
+                                   (0.407 * ll / (ll - pow(0.116, 2))) + 0.897 * ll / (ll - pow(9.896, 2)));
+            double bounce_probX = 1 - pow(4 * pi * cos(angleX) * roughness * n_quartz / wavelength, 2);
+            double bounce_probY = 1 - pow(4 * pi * cos(angleY) * roughness * n_quartz / wavelength, 2);
+
+            double totalProb = pow(bounce_probX, nBouncesX) * pow(bounce_probY, nBouncesY);
+
+            if (G4UniformRand() > totalProb) return false;
+
+            // time since track created
+            m_PrtHit->SetLeadTime(time);
+            m_PrtHit->SetTotTime(wavelength);  //set photon wavelength
+            m_PrtHit->SetMcpId(mcp);
+            m_PrtHit->SetPixelId(pix);
+            m_PrtHit->SetGlobalPos(globalPos);
+            m_PrtHit->SetLocalPos(localPos);
+            m_PrtHit->SetDigiPos(digiPos);
+            m_PrtHit->SetPosition(position);
+            m_PrtHit->SetMomentum(momentum);
+
+            int refl = 0;
+            Int_t normal_id = 0;
+            Long64_t pathId = 0;
+
+            for (std::vector<Int_t>::size_type i = 0; i < vector_nid.size(); i++)
+            {
+              ++refl;
+              normal_id = vector_nid[i];
+              pathId = (pathId * 10L) + normal_id;
+            }
+
+            //std::cout << "nrefl = " << refl << std::endl;
+            //std::cout << "path id = " << pathId << std::endl;
+
+            m_PrtHit->SetNreflectionsInPrizm(refl);
+            m_PrtHit->SetPathInPrizm(pathId);
+
+            vector_nid.clear();
+
+            if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
+            {
+              if (PHG4TrackUserInfoV1 *pp = dynamic_cast<PHG4TrackUserInfoV1 *>(p))
+              {
+                pp->SetKeep(1);  // we want to keep the track
+              }
+            }
+            if (geantino)
+            {
+              m_PrtHit->set_edep(-1);  // only energy=0 g4hits get dropped, this way
+              // geantinos survive the g4hit compression
+              if (whichactive > 0)
+              {
+                m_PrtHit->set_eion(-1);
+              }
+            }
+            else
+            {
+              m_PrtHit->set_edep(m_EdepSum);
+            }
+            if (whichactive > 0)
+            {
+              m_PrtHit->set_eion(m_EionSum);
+            }
+
+            m_SaveHitContainer->AddHit(detector_id, m_PrtHit);
+
+            // ownership has been transferred to container, set to null
+            // so we will create a new hit for the next track
+            //m_Hit = nullptr;
+            m_PrtHit = nullptr;
+          }
+        }
+
+        else
+        {
+          // if this hit has no energy deposit, just reset it for reuse
+          // this means we have to delete it in the dtor. If this was
+          // the last hit we processed the memory is still allocated
+          m_PrtHit->Reset();
+        }
+      }
+
+      // return true to indicate the hit was used
+      return true;
     }
   }
 
   else
-    {
-      return false;
-    }
+  {
+    return false;
+  }
   return false;
 }
 
-//int refl = 0;
-//Int_t normal_id = 0;
-//Long64_t pathId = 0;
 //TVector3 mom_bar;
 //TVector3 pos_bar;
-
-// information from prizm
-/*for(std::vector<Int_t>::size_type i = 0; i < vector_trackid.size(); i++)
-	{
-	  //if(aTrack->GetTrackID() == vector_trackid[i]) 
-	  if(m_SaveTrackId == vector_trackid[i])
-	    {
-	      ++refl;
-	      Int_t normal_id = vector_nid[i];
-		    //std::cout << "nid = " << normal_id << std::endl;
-	      pathId = (pathId * 10L) + normal_id;
-	    }
-	    }*/
-
-//std::cout << "nrefl = " << refl << std::endl;
-//std::cout << "path id = " << pathId << std::endl;
-
-//m_Hit->SetNreflectionsInPrizm(refl);
-//m_Hit->SetPathInPrizm(pathId);
 
 /*for(std::vector<Int_t>::size_type i = 0; i < vector_bar_hit_trackid.size(); i++)
 	{

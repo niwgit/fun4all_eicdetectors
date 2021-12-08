@@ -3,10 +3,10 @@
 #ifndef G4EICDIRCSTEPPINGACTION_H
 #define G4EICDIRCSTEPPINGACTION_H
 
-#include <g4main/PHG4SteppingAction.h>
-#include <vector>
 #include <Rtypes.h>
 #include <TVector3.h>
+#include <g4main/PHG4SteppingAction.h>
+#include <vector>
 
 class G4Step;
 class G4VPhysicalVolume;
@@ -38,9 +38,7 @@ class G4EicDircSteppingAction : public PHG4SteppingAction
   void SetAbsorberNodeName(const std::string& nam) { m_AbsorberNodeName = nam; }
   void SetSupportNodeName(const std::string& nam) { m_SupportNodeName = nam; }
 
-  
-  //std::vector<Int_t> vector_nid;
-  //std::vector<Int_t> vector_trackid;
+  std::vector<Int_t> vector_nid;
 
   //std::vector<Int_t> vector_bar_hit_trackid;
   //std::vector<TVector3> vector_p_bar;

@@ -72,8 +72,8 @@ int G4DIRCTree::Init(PHCompositeNode *)
   g4tree->Branch("pixel_id", mG4EvtTree.pixel_id, "pixel_id[nhits]/I");
   g4tree->Branch("lead_time", mG4EvtTree.lead_time,"lead_time[nhits]/D");
   g4tree->Branch("wavelength", mG4EvtTree.wavelength,"wavelength[nhits]/D");
-  //g4tree->Branch("hit_pathId", mG4EvtTree.hit_pathId, "hit_pathId[nhits]/L");
-  //g4tree->Branch("nrefl", mG4EvtTree.nrefl, "nrefl[nhits]/I");
+  g4tree->Branch("hit_pathId", mG4EvtTree.hit_pathId, "hit_pathId[nhits]/L");
+  g4tree->Branch("nrefl", mG4EvtTree.nrefl, "nrefl[nhits]/I");
 
   g4tree->Branch("hit_globalPos", mG4EvtTree.hit_globalPos, "hit_globalPos[nhits][3]/D");
   g4tree->Branch("hit_localPos", mG4EvtTree.hit_localPos, "hit_localPos[nhits][3]/D");
@@ -188,8 +188,8 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
       mG4EvtTree.pixel_id[nhits] = dirc_hit->GetPixelId();
       mG4EvtTree.lead_time[nhits] = dirc_hit->GetLeadTime();
       mG4EvtTree.wavelength[nhits] = dirc_hit->GetTotTime();
-      //mG4EvtTree.hit_pathId[nhits] = dirc_hit->GetPathInPrizm();
-      //mG4EvtTree.nrefl[nhits] = dirc_hit->GetNreflectionsInPrizm();
+      mG4EvtTree.hit_pathId[nhits] = dirc_hit->GetPathInPrizm();
+      mG4EvtTree.nrefl[nhits] = dirc_hit->GetNreflectionsInPrizm();
 
       for (int i = 0; i < 3; i++)
       {
