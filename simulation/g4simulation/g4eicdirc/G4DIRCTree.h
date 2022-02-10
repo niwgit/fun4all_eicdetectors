@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <TVector3.h>
+#include <TClonesArray.h>
 
 // Forward declarations
 class PHCompositeNode;
@@ -32,7 +33,7 @@ class G4DIRCTree : public SubsysReco
   int process_event(PHCompositeNode *) override;
 
   //! hit processing method
-  int process_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nhits);
+  int process_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nhits, TVector3 dir_vec);
 
   //! end of run method
   int End(PHCompositeNode *) override;
@@ -48,8 +49,10 @@ class G4DIRCTree : public SubsysReco
   std::map<std::string, int> _detid;
 
   TTree *g4tree;
+  TTree *fLutTree;
   G4EventTree mG4EvtTree;
   TFile *outfile;
+  TClonesArray *fLut;
 };
 
 #endif

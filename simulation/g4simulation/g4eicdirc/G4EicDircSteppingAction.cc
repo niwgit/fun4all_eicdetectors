@@ -588,7 +588,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
           postPoint->GetStepStatus() == fAtRestDoItProc ||
           aTrack->GetTrackStatus() == fStopAndKill)
       {
-        if ((whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) && (postPoint->GetStepStatus() == fGeomBoundary))  // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
+        /*if ((whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) && (postPoint->GetStepStatus() == fGeomBoundary))  // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
         {
           // normal to the closest boundary
           G4Navigator *theNavigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
@@ -622,7 +622,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
             if (nid > 0) vector_nid.push_back(nid);
           }
-        }
+	  }*/
 
         // save only hits with energy deposit (or geantino)
 
@@ -698,7 +698,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
             m_PrtHit->SetPosition(position);
             m_PrtHit->SetMomentum(momentum);
 
-            int refl = 0;
+            /*int refl = 0;
             Int_t normal_id = 0;
             Long64_t pathId = 0;
 
@@ -716,7 +716,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
             m_PrtHit->SetPathInPrizm(pathId);
 
             vector_nid.clear();
-
+	    */
             if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
             {
               if (PHG4TrackUserInfoV1 *pp = dynamic_cast<PHG4TrackUserInfoV1 *>(p))
