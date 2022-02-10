@@ -145,7 +145,7 @@ int G4DIRCTree::process_event(PHCompositeNode *topNode)
   mG4EvtTree.nhits = nhits;
 
   if (g4tree) g4tree->Fill();
-  if (fLutTree) fLutTree->Fill();
+  //if (fLutTree) fLutTree->Fill();
 
   evt_num++;
 
@@ -156,7 +156,7 @@ int G4DIRCTree::End(PHCompositeNode *topNode)
 {
   outfile->cd();
   g4tree->Write();
-  fLutTree->Write();
+  //fLutTree->Write();
   outfile->Write();
   outfile->Close();
   delete outfile;
