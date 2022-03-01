@@ -23,18 +23,15 @@ libg4eicdirc_la_LIBADD = \
 pkginclude_HEADERS = \
   G4EicDircSubsystem.h \
   PrtHit.h \
-  PrtLutNode.h \
   G4EventTree.h \
   G4DIRCTree.h    
 
 ROOT_IO_DICTS = \
-  PrtHit_Dict.cc \
-  PrtLutNode_Dict.cc
+  PrtHit_Dict.cc 
 
 pcmdir = $(libdir)
 nobase_dist_pcm_DATA = \
-  PrtHit_Dict_rdict.pcm \
-  PrtLutNode_Dict_rdict.pcm	
+  PrtHit_Dict_rdict.pcm 	
 
 libg4eicdirc_la_SOURCES = \
   G4EicDircDetector.cc \
@@ -44,9 +41,7 @@ libg4eicdirc_la_SOURCES = \
   G4EicDircStackingAction.cc \
   G4EicDircSteppingAction.cc \
   PrtHit.cxx \
-  PrtLutNode.cxx \
   PrtHit_Dict.cc \
-  PrtLutNode_Dict.cc \
   G4DIRCTree.cc 
 
 
