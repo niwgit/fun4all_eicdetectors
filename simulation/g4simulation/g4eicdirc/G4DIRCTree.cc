@@ -1,7 +1,7 @@
 #include "G4DIRCTree.h"
 
 #include "PrtHit.h"
-#include "PrtLutNode.h"
+//#include "PrtLutNode.h"
 
 #include <g4main/PHG4Hit.h>
 #include <g4main/PHG4HitContainer.h>  // for PHG4HitContainer, PHG4Hit...
