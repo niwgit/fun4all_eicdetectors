@@ -15,20 +15,27 @@ typedef struct
   Double_t py;
   Double_t pz;
   Int_t pid;
+  Double_t x0[100];                                                                                                          
+  Double_t y0[100];                                                                                                          
+  Double_t z0[100];                                                                                                       
+  Double_t x1[100];                                                                                                          
+  Double_t y1[100];                                                                                                         
+  Double_t z1[100];
   //Double_t track_mom_bar[3];
   //Double_t track_hit_pos_bar[3];
 
   // Hit level
   int nhits;
+  int nbarhits;
   int detid[MAXHIT];
   int hitid[MAXHIT];
   int trkid[MAXHIT];
-  Double_t x0[MAXHIT];
+  /*Double_t x0[MAXHIT];
   Double_t y0[MAXHIT];
   Double_t z0[MAXHIT];
   Double_t x1[MAXHIT];
   Double_t y1[MAXHIT];
-  Double_t z1[MAXHIT];
+  Double_t z1[MAXHIT];*/
   Double_t edep[MAXHIT];
   Int_t mcp_id[MAXHIT];
   Int_t pixel_id[MAXHIT];

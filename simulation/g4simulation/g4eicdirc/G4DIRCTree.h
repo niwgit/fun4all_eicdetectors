@@ -34,6 +34,7 @@ class G4DIRCTree : public SubsysReco
 
   //! hit processing method
   int process_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nhits, TVector3 dir_vec);
+  int process_track_bar_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nhits);
 
   //! end of run method
   int End(PHCompositeNode *) override;

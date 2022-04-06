@@ -53,15 +53,23 @@ int G4DIRCTree::Init(PHCompositeNode *)
 
   /// Hit level
   g4tree->Branch("nhits", &mG4EvtTree.nhits, "nhits/I");
+  g4tree->Branch("nbarhits", &mG4EvtTree.nbarhits, "nbarhits/I");
   g4tree->Branch("detid", mG4EvtTree.detid, "detid[nhits]/I");
   g4tree->Branch("hitid", mG4EvtTree.hitid, "hitid[nhits]/I");
   g4tree->Branch("trkid", mG4EvtTree.trkid, "trkid[nhits]/I");
-  g4tree->Branch("x0", mG4EvtTree.x0, "x0[nhits]/D");
+  /*g4tree->Branch("x0", mG4EvtTree.x0, "x0[nhits]/D");
   g4tree->Branch("y0", mG4EvtTree.y0, "y0[nhits]/D");
   g4tree->Branch("z0", mG4EvtTree.z0, "z0[nhits]/D");
   g4tree->Branch("x1", mG4EvtTree.x1, "x1[nhits]/D");
   g4tree->Branch("y1", mG4EvtTree.y1, "y1[nhits]/D");
-  g4tree->Branch("z1", mG4EvtTree.z1, "z1[nhits]/D");
+  g4tree->Branch("z1", mG4EvtTree.z1, "z1[nhits]/D");*/
+  g4tree->Branch("x0", mG4EvtTree.x0, "x0[nbarhits]/D");                                                                       
+  g4tree->Branch("y0", mG4EvtTree.y0, "y0[nbarhits]/D");                                                                        
+  g4tree->Branch("z0", mG4EvtTree.z0, "z0[nbarhits]/D");                                                                        
+  g4tree->Branch("x1", mG4EvtTree.x1, "x1[nbarhits]/D");                                                                        
+  g4tree->Branch("y1", mG4EvtTree.y1, "y1[nbarhits]/D");                                                                        
+  g4tree->Branch("z1", mG4EvtTree.z1, "z1[nbarhits]/D");
+
   g4tree->Branch("edep", mG4EvtTree.edep, "edep[nhits]/D");
 
   /*g4tree->Branch("track_angle_at_bar", mG4EvtTree.track_angle_at_bar, "track_angle_at_bar[nhits]/D");
@@ -125,6 +133,7 @@ int G4DIRCTree::process_event(PHCompositeNode *topNode)
   mG4EvtTree.pid = pid;
 
   int nhits = 0;
+  int nbarhits = 0;
 
   std::ostringstream nodename;
   std::set<std::string>::const_iterator iter;
@@ -140,9 +149,16 @@ int G4DIRCTree::process_event(PHCompositeNode *topNode)
     {
       process_hit(hits, "G4HIT_DIRC", detid, nhits, dir_vec);
     }
+
+    if (!strcmp("G4HIT_BAR", nodename.str().c_str()))  // BAR
+      {
+	process_track_bar_hit(hits, "G4HIT_BAR", detid, nbarhits);
+      }
+			      
   }
 
   mG4EvtTree.nhits = nhits;
+  mG4EvtTree.nbarhits = nbarhits;
 
   if (g4tree) g4tree->Fill();
   //if (fLutTree) fLutTree->Fill();
@@ -170,6 +186,30 @@ void G4DIRCTree::AddNode(const std::string &name, const int detid)
   return;
 }
 
+
+int G4DIRCTree::process_track_bar_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nbarhits)
+{
+  if (hits)
+    {
+      PHG4HitContainer::ConstRange bar_hit_range = hits->getHits();
+      for (PHG4HitContainer::ConstIterator bar_hit_iter = bar_hit_range.first; bar_hit_iter != bar_hit_range.second; bar_hit_iter++)
+	{
+	  PHG4Hit* bar_Hit = dynamic_cast<PHG4Hit *>(bar_hit_iter->second);
+
+	  mG4EvtTree.x0[nbarhits] = bar_Hit->get_x(0);
+	  mG4EvtTree.y0[nbarhits] = bar_Hit->get_y(0);
+	  mG4EvtTree.z0[nbarhits] = bar_Hit->get_z(0);
+	  mG4EvtTree.x1[nbarhits] = bar_Hit->get_x(1);
+	  mG4EvtTree.y1[nbarhits] = bar_Hit->get_y(1);
+	  mG4EvtTree.z1[nbarhits] = bar_Hit->get_z(1);
+
+	  nbarhits++;
+	}
+    }
+  return 0;
+}
+
+
 int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nhits, TVector3 dir_vec)
 {
   if (hits)
@@ -183,12 +223,12 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
       mG4EvtTree.hitid[nhits] = dirc_hit->get_hit_id();
       mG4EvtTree.trkid[nhits] = dirc_hit->get_trkid();
 
-      mG4EvtTree.x0[nhits] = dirc_hit->get_x(0);
+      /*mG4EvtTree.x0[nhits] = dirc_hit->get_x(0);
       mG4EvtTree.y0[nhits] = dirc_hit->get_y(0);
       mG4EvtTree.z0[nhits] = dirc_hit->get_z(0);
       mG4EvtTree.x1[nhits] = dirc_hit->get_x(1);
       mG4EvtTree.y1[nhits] = dirc_hit->get_y(1);
-      mG4EvtTree.z1[nhits] = dirc_hit->get_z(1);
+      mG4EvtTree.z1[nhits] = dirc_hit->get_z(1);*/
       mG4EvtTree.edep[nhits] = dirc_hit->get_edep();
 
       //mG4EvtTree.track_angle_at_bar[nhits] = dirc_hit->GetAngleTrack();

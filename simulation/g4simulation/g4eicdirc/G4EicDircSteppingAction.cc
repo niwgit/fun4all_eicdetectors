@@ -300,6 +300,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
           m_Hit->Reset();
         }
       }
+      return true;
     }  // end save track information
 
     //-----------------------------
