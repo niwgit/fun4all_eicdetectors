@@ -79,11 +79,13 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   int whichactive_int = m_Detector->IsInDetector(volume);
   int whichactive_int_post = m_Detector->IsInDetector(volume_post);
   bool whichactive = (whichactive_int > 0 && whichactive_int < 12);
+  std::cout << "detector" << whichactive_int << std::endl;
 
   if (!whichactive)
   {
     return false;
   }
+  
 
   // collect energy and track length step by step
   G4double edep = aStep->GetTotalEnergyDeposit() / GeV;
@@ -92,6 +94,23 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       GeV;
   const G4Track *aTrack = aStep->GetTrack();
 
+  G4StepPoint *prePoint = aStep->GetPreStepPoint();
+  G4StepPoint *postPoint = aStep->GetPostStepPoint();
+
+  std::cout << "This is after detector check" << std::endl;
+  std::cout << "volume number = " << whichactive_int << std::endl; 
+  std::cout << GetName() << ": Entering stepping action  " << std::endl;
+  std::cout << "prestep status: " << PHG4StepStatusDecode::GetStepStatus(prePoint->GetStepStatus())
+	    << ", poststep status: " << PHG4StepStatusDecode::GetStepStatus(postPoint->GetStepStatus()) << std::endl;
+    //<< ", last pre step status: " << PHG4StepStatusDecode::GetStepStatus(m_SavePreStepStatus)
+    //	    << ", last post step status: " << PHG4StepStatusDecode::GetStepStatus(m_SavePostStepStatus) 
+  std::cout << "last track: " << m_SaveTrackId
+	    << ", current trackid: " << aTrack->GetTrackID() << std::endl;
+  std::cout << "phys pre vol: " << volume->GetName()
+	    << " post vol : " << touchpost->GetVolume()->GetName() << std::endl;
+  /*std::cout << " previous phys pre vol: " << m_SaveVolPre->GetName()
+	    << " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
+  */
   if (aTrack->GetCurrentStepNumber() > 50000 || aTrack->GetTrackLength() > 30000)
   {
     //std::cout<<"WRN: too many steps or track length > 30 m  N=" << aTrack->GetCurrentStepNumber()<<" Len = "<< aTrack->GetTrackLength()/1000. <<std::endl;
@@ -138,8 +157,8 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
     G4ParticleDefinition *particle = dynParticle->GetDefinition();
     G4String ParticleName = particle->GetParticleName();
 
-    G4StepPoint *prePoint = aStep->GetPreStepPoint();
-    G4StepPoint *postPoint = aStep->GetPostStepPoint();
+    //G4StepPoint *prePoint = aStep->GetPreStepPoint();
+    //G4StepPoint *postPoint = aStep->GetPostStepPoint();
     //       std::cout << "track id " << aTrack->GetTrackID() << std::endl;
     //       std::cout << "time prepoint: " << prePoint->GetGlobalTime() << std::endl;
     //       std::cout << "time postpoint: " << postPoint->GetGlobalTime() << std::endl;
@@ -160,14 +179,27 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
         std::cout << "phys pre vol: " << volume->GetName()
                   << " post vol : " << touchpost->GetVolume()->GetName() << std::endl;
         std::cout << " previous phys pre vol: " << m_SaveVolPre->GetName()
-                  << " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
+	<< " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
       }
       if (!m_Hit)
       {
-        m_Hit = new PHG4Hitv1();
+        m_Hit = new PHG4Hitv1();	
       }
 
-      if ((whichactive_int == 2 || whichactive_int == 3) && (prepointstatus == fGeomBoundary) && (aTrack->GetParentID() == 0) && (ParticleName != "opticalphoton"))  //pre step in a long piece of bar(2) or short piece of bar(3) ------
+      std::cout << GetName() << ": checking hits for " << "\t" << whichactive_int << std::endl;                                                               
+      std::cout << "prestep status: " << PHG4StepStatusDecode::GetStepStatus(prePoint->GetStepStatus())                       
+		<< ", poststep status: " << PHG4StepStatusDecode::GetStepStatus(postPoint->GetStepStatus()) << std::endl;                    
+
+
+        std::cout << "last track: " << m_SaveTrackId                                                                              
+	<< ", current trackid: " << aTrack->GetTrackID() << std::endl;                                                  
+        std::cout << "phys pre vol: " << volume->GetName()                                                                        
+	<< " post vol : " << touchpost->GetVolume()->GetName() << std::endl;                                            
+        //std::cout << " previous phys pre vol: " << m_SaveVolPre->GetName()                                                        
+	  //<< " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
+	std::cout << "Particle " << ParticleName << std::endl;
+
+	if ((whichactive_int == 2 || whichactive_int == 3) && ((prepointstatus == fGeomBoundary) || (prepointstatus == fUndefined)) && (ParticleName != "opticalphoton"))  //pre step in a long piece of bar(2) or short piece of bar(3) ------
       {
         //here we set the entrance values in cm
         m_Hit->set_x(0, prePoint->GetPosition().x() / cm);
@@ -202,7 +234,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
     // some sanity checks for inconsistencies
     // check if this hit was created, if not print out last post step status
-    if (!m_Hit || !isfinite(m_Hit->get_x(0)))
+    /*if (!m_Hit || !isfinite(m_Hit->get_x(0)))
     {
       std::cout << GetName() << ": hit was not created" << std::endl;
       std::cout << "prestep status: " << PHG4StepStatusDecode::GetStepStatus(prePoint->GetStepStatus())
@@ -216,7 +248,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       std::cout << " previous phys pre vol: " << m_SaveVolPre->GetName()
                 << " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
       exit(1);
-    }
+      }*/
     m_SavePostStepStatus = postPoint->GetStepStatus();
     // check if track id matches the initial one when the hit was created
     if (aTrack->GetTrackID() != m_SaveTrackId)
@@ -236,8 +268,26 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
     // for every step until we leave the volume or the particle
     // ceases to exist
 
-    if ((whichactive_int_post == 2 || whichactive_int_post == 3) && (postPoint->GetStepStatus() == fGeomBoundary) && (aTrack->GetParentID() == 0) && (ParticleName != "opticalphoton"))  //post step in a long piece of bar(2) or short piece of bar(3) ------
+    std::cout << "post step detector " << whichactive_int_post << std::endl; 
+
+    if ((whichactive_int == 2 || whichactive_int == 3) && ((postPoint->GetStepStatus() == fGeomBoundary) || (prepointstatus == fUndefined)) && (ParticleName != "opticalphoton"))  //post step in a long piece of bar(2) or short piece of bar(3) ------
     {
+      if (!m_Hit || !isfinite(m_Hit->get_x(0)))
+	{
+	  std::cout << GetName() << ": hit was not created" << std::endl;
+	  std::cout << "prestep status: " << PHG4StepStatusDecode::GetStepStatus(prePoint->GetStepStatus())
+		    << ", poststep status: " << PHG4StepStatusDecode::GetStepStatus(postPoint->GetStepStatus())
+		    << ", last pre step status: " << PHG4StepStatusDecode::GetStepStatus(m_SavePreStepStatus)
+		    << ", last post step status: " << PHG4StepStatusDecode::GetStepStatus(m_SavePostStepStatus) << std::endl;
+	  std::cout << "last track: " << m_SaveTrackId
+		    << ", current trackid: " << aTrack->GetTrackID() << std::endl;
+	  std::cout << "phys pre vol: " << volume->GetName()
+		    << " post vol : " << touchpost->GetVolume()->GetName() << std::endl;
+	  std::cout << " previous phys pre vol: " << m_SaveVolPre->GetName()
+		    << " previous phys post vol: " << m_SaveVolPost->GetName() << std::endl;
+	  exit(1);
+	}
+
       m_Hit->set_x(1, postPoint->GetPosition().x() / cm);
       m_Hit->set_y(1, postPoint->GetPosition().y() / cm);
       m_Hit->set_z(1, postPoint->GetPosition().z() / cm);
@@ -287,6 +337,8 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
         // save only hits with energy deposit (or -1 for geantino)
         if (m_Hit->get_edep())
         {
+	  std::cout << "adding bar hit" << std::endl;
+	  m_Hit->identify();
           m_AbsorberHitContainer->AddHit(0, m_Hit);
           // ownership has been transferred to container, set to null
           // so we will create a new hit for the next track
@@ -356,7 +408,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
     // check if this hit was created, if not print out last post step status
     if (!m_PrtHit || !isfinite(m_PrtHit->get_x(0)))
     {
-      std::cout << GetName() << ": hit was not created" << std::endl;
+      std::cout << GetName() << ": Prt hit was not created" << std::endl;
       std::cout << "prestep status: "
                 << PHG4StepStatusDecode::GetStepStatus(prePoint->GetStepStatus())
                 << ", poststep status: "
