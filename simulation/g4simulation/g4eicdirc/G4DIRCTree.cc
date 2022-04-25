@@ -69,6 +69,12 @@ int G4DIRCTree::Init(PHCompositeNode *)
   g4tree->Branch("x1", mG4EvtTree.x1, "x1[nbarhits]/D");                                                                        
   g4tree->Branch("y1", mG4EvtTree.y1, "y1[nbarhits]/D");                                                                        
   g4tree->Branch("z1", mG4EvtTree.z1, "z1[nbarhits]/D");
+  g4tree->Branch("px0", mG4EvtTree.px0, "px0[nbarhits]/D");
+  g4tree->Branch("py0", mG4EvtTree.py0, "py0[nbarhits]/D");
+  g4tree->Branch("pz0", mG4EvtTree.pz0, "pz0[nbarhits]/D");
+  g4tree->Branch("px1", mG4EvtTree.px1, "px1[nbarhits]/D");
+  g4tree->Branch("py1", mG4EvtTree.py1, "py1[nbarhits]/D");
+  g4tree->Branch("pz1", mG4EvtTree.pz1, "pz1[nbarhits]/D");
 
   g4tree->Branch("edep", mG4EvtTree.edep, "edep[nhits]/D");
 
@@ -82,8 +88,10 @@ int G4DIRCTree::Init(PHCompositeNode *)
   g4tree->Branch("pixel_id", mG4EvtTree.pixel_id, "pixel_id[nhits]/I");
   g4tree->Branch("lead_time", mG4EvtTree.lead_time,"lead_time[nhits]/D");
   g4tree->Branch("wavelength", mG4EvtTree.wavelength,"wavelength[nhits]/D");
-  //g4tree->Branch("hit_pathId", mG4EvtTree.hit_pathId, "hit_pathId[nhits]/L");
-  //g4tree->Branch("nrefl", mG4EvtTree.nrefl, "nrefl[nhits]/I");
+  g4tree->Branch("hit_pathId", mG4EvtTree.hit_pathId, "hit_pathId[nhits]/L");
+  g4tree->Branch("nrefl", mG4EvtTree.nrefl, "nrefl[nhits]/I");
+  g4tree->Branch("parent_pid", mG4EvtTree.parent_pid, "parent_pid[nhits]/I");
+  g4tree->Branch("parent_momentum", mG4EvtTree.parent_momentum, "parent_momentum[nhits]/D");
 
   g4tree->Branch("hit_globalPos", mG4EvtTree.hit_globalPos, "hit_globalPos[nhits][3]/D");
   g4tree->Branch("hit_localPos", mG4EvtTree.hit_localPos, "hit_localPos[nhits][3]/D");
@@ -203,6 +211,13 @@ int G4DIRCTree::process_track_bar_hit(PHG4HitContainer *hits, const std::string 
 	  mG4EvtTree.y1[nbarhits] = bar_Hit->get_y(1);
 	  mG4EvtTree.z1[nbarhits] = bar_Hit->get_z(1);
 
+	  mG4EvtTree.px0[nbarhits] = bar_Hit->get_px(0);
+          mG4EvtTree.py0[nbarhits] = bar_Hit->get_py(0);
+          mG4EvtTree.pz0[nbarhits] = bar_Hit->get_pz(0);
+          mG4EvtTree.px1[nbarhits] = bar_Hit->get_px(1);
+          mG4EvtTree.py1[nbarhits] = bar_Hit->get_py(1);
+          mG4EvtTree.pz1[nbarhits] = bar_Hit->get_pz(1);
+
 	  nbarhits++;
 	}
     }
@@ -239,8 +254,10 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
       mG4EvtTree.pixel_id[nhits] = dirc_hit->GetPixelId();
       mG4EvtTree.lead_time[nhits] = dirc_hit->GetLeadTime();
       mG4EvtTree.wavelength[nhits] = dirc_hit->GetTotTime();
-      //mG4EvtTree.hit_pathId[nhits] = dirc_hit->GetPathInPrizm();
-      //mG4EvtTree.nrefl[nhits] = dirc_hit->GetNreflectionsInPrizm();
+      mG4EvtTree.hit_pathId[nhits] = dirc_hit->GetPathInPrizm();
+      mG4EvtTree.nrefl[nhits] = dirc_hit->GetNreflectionsInPrizm();
+      mG4EvtTree.parent_pid[nhits] = dirc_hit->GetParentParticleId();
+      mG4EvtTree.parent_momentum[nhits] = dirc_hit->GetParentParticleMomentum().Mag();
 
       for (int i = 0; i < 3; i++)
       {

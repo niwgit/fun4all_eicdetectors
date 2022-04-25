@@ -89,7 +89,7 @@ G4ClassificationOfNewTrack G4EicDircStackingAction::ClassifyNewTrack(const G4Tra
   std::string particlename = aTrack->GetDefinition()->GetParticleName();
   if (particlename == "opticalphoton")
   {
-    if (aTrack->GetParentID() != 1)
+    if (aTrack->GetParentID() == 0)
     {
       return fKill;
     }

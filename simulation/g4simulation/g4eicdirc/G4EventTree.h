@@ -21,6 +21,7 @@ typedef struct
   Double_t x1[100];                                                                                                          
   Double_t y1[100];                                                                                                         
   Double_t z1[100];
+  Double_t px0[100], py0[100], pz0[100], px1[100], py1[100], pz1[100];
   //Double_t track_mom_bar[3];
   //Double_t track_hit_pos_bar[3];
 
@@ -53,8 +54,10 @@ typedef struct
   Double_t hit_digiPos[MAXHIT][3];
   Double_t hit_mom[MAXHIT][3];
   Double_t hit_pos[MAXHIT][3];
-  //Long64_t hit_pathId[MAXHIT];
-  //Int_t nrefl[MAXHIT];
+  Long64_t hit_pathId[MAXHIT];
+  Int_t nrefl[MAXHIT];
+  Int_t parent_pid[MAXHIT];
+  Double_t parent_momentum[MAXHIT];
 
 } G4EventTree;
 
