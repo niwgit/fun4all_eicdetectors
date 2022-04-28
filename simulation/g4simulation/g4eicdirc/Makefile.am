@@ -24,7 +24,8 @@ pkginclude_HEADERS = \
   G4EicDircSubsystem.h \
   PrtHit.h \
   G4EventTree.h \
-  G4DIRCTree.h    
+  G4DIRCTree.h \
+  PrtLutNode.h    
 
 ROOT_IO_DICTS = \
   PrtHit_Dict.cc 
@@ -42,8 +43,8 @@ libg4eicdirc_la_SOURCES = \
   G4EicDircSteppingAction.cc \
   PrtHit.cxx \
   PrtHit_Dict.cc \
-  G4DIRCTree.cc 
-
+  G4DIRCTree.cc \ 
+  PrtLutNode.cxx
 
 # Rule for generating table CINT dictionaries.
 %_Dict.cc: %.h %LinkDef.h
