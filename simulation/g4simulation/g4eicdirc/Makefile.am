@@ -28,11 +28,13 @@ pkginclude_HEADERS = \
   PrtLutNode.h    
 
 ROOT_IO_DICTS = \
-  PrtHit_Dict.cc 
+  PrtHit_Dict.cc \ 
+  PrtLutNode_Dict.cc 
 
 pcmdir = $(libdir)
 nobase_dist_pcm_DATA = \
-  PrtHit_Dict_rdict.pcm 	
+  PrtHit_Dict_rdict.pcm \
+  PrtLutNode_Dict_rdict.pcm 	
 
 libg4eicdirc_la_SOURCES = \
   G4EicDircDetector.cc \
@@ -44,7 +46,8 @@ libg4eicdirc_la_SOURCES = \
   PrtHit.cxx \
   PrtHit_Dict.cc \
   G4DIRCTree.cc \ 
-  PrtLutNode.cxx
+  PrtLutNode.cxx \
+  PrtLutNode_Dict.cc	
 
 # Rule for generating table CINT dictionaries.
 %_Dict.cc: %.h %LinkDef.h

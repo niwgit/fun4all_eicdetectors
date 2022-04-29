@@ -15,8 +15,6 @@ typedef struct
   Double_t py;
   Double_t pz;
   Int_t pid;
-  //Double_t track_mom_bar[3];
-  //Double_t track_hit_pos_bar[3];
 
   // Hit level
   int nhits;
@@ -32,14 +30,7 @@ typedef struct
   Double_t edep[MAXHIT];
   Int_t mcp_id[MAXHIT];
   Int_t pixel_id[MAXHIT];
-  //Double_t track_mom_bar[MAXHIT][3];
-  //Double_t track_hit_pos_bar[MAXHIT][3];
   Double_t lead_time[MAXHIT];
-  //Double_t bar_hit_time[MAXHIT];
-  //Double_t track_angle_at_bar[MAXHIT];
-  //Double_t track_phi[MAXHIT];
-  //Double_t track_mom[MAXHIT][3];
-  //Double_t track_pos[MAXHIT][3];
   Double_t wavelength[MAXHIT];
   Double_t hit_globalPos[MAXHIT][3];
   Double_t hit_localPos[MAXHIT][3];
