@@ -136,7 +136,6 @@ int G4DIRCTree::process_event(PHCompositeNode *topNode)
   mG4EvtTree.nhits = nhits;
 
   if (g4tree) g4tree->Fill();
-  if (fLutTree) {fLutTree->Fill(); std::cout << "filling lut tree" << std::endl;}
 
   evt_num++;
 
@@ -147,7 +146,11 @@ int G4DIRCTree::End(PHCompositeNode *topNode)
 {
   outfile->cd();
   g4tree->Write();
-  fLutTree->Write();
+  if (fLutTree) 
+    {
+      fLutTree->Fill();
+      fLutTree->Write();
+    }
   outfile->Write();
   outfile->Close();
   delete outfile;
@@ -204,7 +207,7 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
 	AddEntry(id, dir_vec, dirc_hit->GetPathInPrizm(),
 		 dirc_hit->GetNreflectionsInPrizm(),
 		 dirc_hit->GetLeadTime(), dirc_hit->GetGlobalPos(), dirc_hit->GetDigiPos());
-  
+
       nhits++;
     }
 

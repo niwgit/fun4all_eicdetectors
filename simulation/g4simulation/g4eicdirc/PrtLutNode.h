@@ -9,9 +9,9 @@
 #ifndef PrtLutNode_h
 #define PrtLutNode_h 1
 
-#include "TObject.h"
-#include "TClonesArray.h"
-#include "TVector3.h"
+#include <TObject.h>
+#include <TClonesArray.h>
+#include <TVector3.h>
 #include <vector>
 #include <iostream>
 
@@ -43,7 +43,7 @@ public:
   TVector3 GetHitPos(Int_t entry){ return fHitPos[entry]; }
   TVector3 GetDigiPos(){ return fDigiPos; }
 
-private:
+ private:
 
   Int_t fDetectorId;
   Int_t fSize;
