@@ -40,10 +40,6 @@ class G4EicDircSteppingAction : public PHG4SteppingAction
 
   std::vector<Int_t> vector_nid;
 
-  //std::vector<Int_t> vector_bar_hit_trackid;
-  //std::vector<TVector3> vector_p_bar;
-  //std::vector<TVector3> vector_hit_pos_bar;
-
  private:
   //! pointer to the detector
   G4EicDircDetector* m_Detector = nullptr;

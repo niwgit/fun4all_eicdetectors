@@ -33,7 +33,7 @@ class G4DIRCTree : public SubsysReco
   int process_event(PHCompositeNode *) override;
 
   //! hit processing method
-  int process_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nhits, TVector3 dir_vec);
+  int process_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nhits);
 
   //! end of run method
   int End(PHCompositeNode *) override;
@@ -49,10 +49,8 @@ class G4DIRCTree : public SubsysReco
   std::map<std::string, int> _detid;
 
   TTree *g4tree;
-  //TTree *fLutTree;
   G4EventTree mG4EvtTree;
   TFile *outfile;
-  //TClonesArray *fLut;
 };
 
 #endif
