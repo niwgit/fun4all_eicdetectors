@@ -469,15 +469,22 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
           Int_t nid = 0;
           G4bool valid;
-          G4ThreeVector normal = theNavigator->GetLocalExitNormal(&valid);
-          G4ThreeVector gnormal = theNavigator->GetLocalToGlobalTransform().TransformAxis(-normal);
-          normal = touch->GetHistory()->GetTransform(1).TransformAxis(gnormal);  // in lDirc
+          //G4ThreeVector normal = theNavigator->GetLocalExitNormal(&valid);
+          //G4ThreeVector gnormal = theNavigator->GetLocalToGlobalTransform().TransformAxis(-normal);
+          //normal = touch->GetHistory()->GetTransform(1).TransformAxis(gnormal);  // in lDirc
+
+	  G4ThreeVector normal0 = theNavigator->GetLocalExitNormal(&valid);
+          G4ThreeVector normal = theNavigator->GetLocalToGlobalTransform().TransformAxis(-normal0);
+          normal0 = touch->GetHistory()->GetTransform(1).TransformAxis(normal);
 
           if (valid)
           {
             if (whichactive_int == 9)  // Prizm
             {
-              if (normal.y() > 0.99) nid = 1;   // right
+	      //std::cout << "normal.x() = " << normal.x() << "\t" << "normal.y() = " << normal.y() << "\t" << "normal.z() = " << normal.z() << std::endl;
+	      //std::cout << "gnormal.x() = " << gnormal.x() << "\t" << "gnormal.y() = " << gnormal.y() << "\t" << "gnormal.z() = " << gnormal.z() << std::endl;
+ 
+	      if (normal.y() > 0.99) nid = 1;   // right
               if (normal.y() < -0.99) nid = 2;  // left
               if (normal.x() > 0.99) nid = 3;   // bottom
               if (fabs(normal.x() + 0.866025) < 0.1) nid = 4;
@@ -494,7 +501,9 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
               nid = 9;
             }
 
-            if (nid > 0) vector_nid.push_back(nid);
+	    //std::cout << "nid = " << nid << std::endl;
+            if (nid > 0)  vector_nid.push_back(nid);
+
           }
 	}
 

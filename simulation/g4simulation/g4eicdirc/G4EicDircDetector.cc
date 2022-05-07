@@ -590,7 +590,7 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
     
   G4RotationMatrix* xRot = new G4RotationMatrix();
   xRot->rotateX(M_PI/2.*rad);
-
+  
   G4RotationMatrix *fdrot = new G4RotationMatrix();
   double evshiftz = 0.5*dirclength+fPrizm[1]+fMcpActive[2]/2.+fLens[2];
   double evshiftx = 0;
