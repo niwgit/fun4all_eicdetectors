@@ -25,6 +25,7 @@ pkginclude_HEADERS = \
   PrtHit.h \
   G4EventTree.h \
   G4DIRCTree.h \
+  G4LUTTree.h \
   PrtLutNode.h    
 
 ROOT_IO_DICTS = \
@@ -45,7 +46,8 @@ libg4eicdirc_la_SOURCES = \
   G4EicDircSteppingAction.cc \
   PrtHit.cxx \
   PrtHit_Dict.cc \
-  G4DIRCTree.cc \ 
+  G4DIRCTree.cc \
+  G4LUTTree.cc \ 
   PrtLutNode.cxx \
   PrtLutNode_Dict.cc	
 

@@ -1,7 +1,7 @@
 #include "G4DIRCTree.h"
 
 #include "PrtHit.h"
-#include "PrtLutNode.h"
+//#include "PrtLutNode.h"
 
 #include <g4main/PHG4Hit.h>
 #include <g4main/PHG4HitContainer.h>  // for PHG4HitContainer, PHG4Hit...
@@ -11,6 +11,7 @@
 #include <fun4all/SubsysReco.h>  // for SubsysReco
 
 #include <phool/getClass.h>
+#include <phparameter/PHParameters.h>
 
 #include <TFile.h>
 #include <TTree.h>
@@ -24,7 +25,6 @@
 
 G4DIRCTree::G4DIRCTree(const std::string &name, const std::string &filename)
   : SubsysReco(name)
-  , nblocks(0)
   , _filename(filename)
   , g4tree(nullptr)
   , outfile(nullptr)
@@ -77,16 +77,17 @@ int G4DIRCTree::Init(PHCompositeNode *)
 
   //-------- LUT --------
   
-  fLut = new TClonesArray("PrtLutNode");
+  /*fLut = new TClonesArray("PrtLutNode");
   fLutTree = new TTree("prtlut","Look-up table for the geometrical reconstruction.");
   fLutTree->Branch("LUT",&fLut,256000,2); 
   Int_t Nnodes = 100000;
     
   TClonesArray &fLuta = *fLut; 
-  for (Long64_t n=0; n<Nnodes; n++) {
-    new((fLuta)[n]) PrtLutNode(n);
+  for (Long64_t n=0; n<Nnodes; n++) 
+    {
+      new((fLuta)[n]) PrtLutNode(n);
     }    
-
+  */
   return 0;
 }
 
@@ -145,11 +146,11 @@ int G4DIRCTree::End(PHCompositeNode *topNode)
 {
   outfile->cd();
   g4tree->Write();
-  if (fLutTree) 
-    {
-      fLutTree->Fill();
-      fLutTree->Write();
-    }
+  /*if (fLutTree) 
+  {
+    fLutTree->Fill();
+    fLutTree->Write();
+    }*/
   outfile->Write();
   outfile->Close();
   delete outfile;
@@ -201,12 +202,12 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
 	  
       }
 
-      int id = 256*dirc_hit->GetMcpId() + dirc_hit->GetPixelId();
+      /*int id = 256*dirc_hit->GetMcpId() + dirc_hit->GetPixelId();
       ((PrtLutNode*)(fLut->At(id)))->
 	AddEntry(id, dir_vec, dirc_hit->GetPathInPrizm(),
 		 dirc_hit->GetNreflectionsInPrizm(),
-		 dirc_hit->GetLeadTime(), dirc_hit->GetGlobalPos(), dirc_hit->GetDigiPos());
-
+		 dirc_hit->GetLeadTime(), dirc_hit->GetGlobalPos(), dirc_hit->GetDigiPos());	
+      */
       nhits++;
     }
 

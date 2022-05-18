@@ -125,13 +125,7 @@ void G4EicDircSubsystem::AddProcesses(G4ParticleDefinition *particle)
   G4ProcessManager *pmanager = particle->GetProcessManager();
   if (DircBoundary->IsApplicable(*particle))
   {
-    //pmanager->AddDiscreteProcess(DircBoundary);
-    pmanager->RemoveProcess(DircBoundary);
-    //pmanager->SetProcessOrderingToFirst(DircBoundary, idxPostStep);
-    //G4ProcessManager *pmanager = G4OpticalPhoton::OpticalPhoton()->GetProcessManager();
-    //pmanager->DumpInfo();
-    //G4cout << "dirc boundary process index = " << pmanager->GetProcessIndex(DircBoundary) << G4endl;
-    //G4cout << "dirc boundary process ordering = " << pmanager->GetProcessOrdering(DircBoundary, idxPostStep) << G4endl;
+    pmanager->AddDiscreteProcess(DircBoundary);
   }
 }
 

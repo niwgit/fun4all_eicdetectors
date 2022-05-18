@@ -1,5 +1,5 @@
-#ifndef G4DIRCTREE_H
-#define G4DIRCTREE_H
+#ifndef G4LUTTREE_H
+#define G4LUTTREE_H
 
 #include "G4EventTree.h"
 
@@ -18,14 +18,14 @@ class TFile;
 class TTree;
 class PHParameters;
 
-class G4DIRCTree : public SubsysReco
+class G4LUTTree : public SubsysReco
 {
  public:
   //! constructor
-  G4DIRCTree(const std::string &name = "G4DIRCTree", const std::string &filename = "G4DIRCTree.root");
+  G4LUTTree(const std::string &name = "G4LUTTree", const std::string &filename = "G4LUTTree.root");
 
   //! destructor
-  ~G4DIRCTree() override {}
+  ~G4LUTTree() override {}
 
   //! full initialization
   int Init(PHCompositeNode *) override;
@@ -47,11 +47,9 @@ class G4DIRCTree : public SubsysReco
   std::set<std::string> _node_postfix;
   std::map<std::string, int> _detid;
 
-  TTree *g4tree;
-  //TTree *fLutTree;
-  G4EventTree mG4EvtTree;
+  TTree *fLutTree;
   TFile *outfile;
-  //TClonesArray *fLut;
+  TClonesArray *fLut;
 
 };
 
