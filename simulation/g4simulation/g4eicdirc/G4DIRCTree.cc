@@ -1,7 +1,6 @@
 #include "G4DIRCTree.h"
 
 #include "PrtHit.h"
-//#include "PrtLutNode.h"
 
 #include <g4main/PHG4Hit.h>
 #include <g4main/PHG4HitContainer.h>  // for PHG4HitContainer, PHG4Hit...
@@ -67,6 +66,8 @@ int G4DIRCTree::Init(PHCompositeNode *)
   g4tree->Branch("wavelength", mG4EvtTree.wavelength,"wavelength[nhits]/D");
   g4tree->Branch("hit_pathId", mG4EvtTree.hit_pathId, "hit_pathId[nhits]/L");
   g4tree->Branch("nrefl", mG4EvtTree.nrefl, "nrefl[nhits]/I");
+  g4tree->Branch("parent_pid", mG4EvtTree.parent_pid, "parent_pid[nhits]/I");
+  g4tree->Branch("parent_momentum", mG4EvtTree.parent_momentum, "parent_momentum[nhits]/D");
 
   g4tree->Branch("hit_globalPos", mG4EvtTree.hit_globalPos, "hit_globalPos[nhits][3]/D");
   g4tree->Branch("hit_localPos", mG4EvtTree.hit_localPos, "hit_localPos[nhits][3]/D");
@@ -74,20 +75,6 @@ int G4DIRCTree::Init(PHCompositeNode *)
   g4tree->Branch("hit_mom", mG4EvtTree.hit_mom, "hit_mom[nhits][3]/D");
   g4tree->Branch("hit_pos", mG4EvtTree.hit_pos, "hit_pos[nhits][3]/D");
 
-
-  //-------- LUT --------
-  
-  /*fLut = new TClonesArray("PrtLutNode");
-  fLutTree = new TTree("prtlut","Look-up table for the geometrical reconstruction.");
-  fLutTree->Branch("LUT",&fLut,256000,2); 
-  Int_t Nnodes = 100000;
-    
-  TClonesArray &fLuta = *fLut; 
-  for (Long64_t n=0; n<Nnodes; n++) 
-    {
-      new((fLuta)[n]) PrtLutNode(n);
-    }    
-  */
   return 0;
 }
 
@@ -146,11 +133,6 @@ int G4DIRCTree::End(PHCompositeNode *topNode)
 {
   outfile->cd();
   g4tree->Write();
-  /*if (fLutTree) 
-  {
-    fLutTree->Fill();
-    fLutTree->Write();
-    }*/
   outfile->Write();
   outfile->Close();
   delete outfile;
@@ -191,6 +173,8 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
       mG4EvtTree.wavelength[nhits] = dirc_hit->GetTotTime();
       mG4EvtTree.hit_pathId[nhits] = dirc_hit->GetPathInPrizm();
       mG4EvtTree.nrefl[nhits] = dirc_hit->GetNreflectionsInPrizm();
+      mG4EvtTree.parent_pid[nhits] = dirc_hit->GetParentParticleId();
+      mG4EvtTree.parent_momentum[nhits] = dirc_hit->GetParentParticleMomentum().Mag();
 
       for (int i = 0; i < 3; i++)
       {
@@ -202,12 +186,6 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
 	  
       }
 
-      /*int id = 256*dirc_hit->GetMcpId() + dirc_hit->GetPixelId();
-      ((PrtLutNode*)(fLut->At(id)))->
-	AddEntry(id, dir_vec, dirc_hit->GetPathInPrizm(),
-		 dirc_hit->GetNreflectionsInPrizm(),
-		 dirc_hit->GetLeadTime(), dirc_hit->GetGlobalPos(), dirc_hit->GetDigiPos());	
-      */
       nhits++;
     }
 

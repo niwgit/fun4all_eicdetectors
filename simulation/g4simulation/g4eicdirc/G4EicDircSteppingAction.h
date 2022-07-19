@@ -7,6 +7,7 @@
 #include <TVector3.h>
 #include <g4main/PHG4SteppingAction.h>
 #include <vector>
+#include <map>
 
 class G4Step;
 class G4VPhysicalVolume;
@@ -39,6 +40,8 @@ class G4EicDircSteppingAction : public PHG4SteppingAction
   void SetSupportNodeName(const std::string& nam) { m_SupportNodeName = nam; }
 
   std::vector<Int_t> vector_nid;
+  std::map<Int_t, Int_t> map_track_id_and_pid;
+  std::map<Int_t, TVector3> map_track_id_and_momentum;
 
   //std::vector<Int_t> vector_bar_hit_trackid;
   //std::vector<TVector3> vector_p_bar;
@@ -63,6 +66,7 @@ class G4EicDircSteppingAction : public PHG4SteppingAction
   int m_SavePostStepStatus = -1;
   int m_ActiveFlag = 0;
   int m_BlackHoleFlag = 0;
+  int event_num = -1;
   double m_EdepSum = 0.;
   double m_EionSum = 0.;
 

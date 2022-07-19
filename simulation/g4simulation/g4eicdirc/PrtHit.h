@@ -34,6 +34,7 @@ class PrtHit : public PHG4Hitv1
   // Accessors
   Int_t GetParticleId() { return fParticleId; }
   Int_t GetParentParticleId() { return fParentParticleId; }
+  TVector3 GetParentParticleMomentum() { return fParentParticleMomentum; }
 
   Int_t GetNreflectionsInPrizm() { return fNreflectionsInPrizm; }
   Long64_t GetPathInPrizm() { return fPathInPrizm; }
@@ -58,6 +59,7 @@ class PrtHit : public PHG4Hitv1
   // Mutators
   void SetParticleId(Int_t val) { fParticleId = val; }
   void SetParentParticleId(Int_t val) { fParentParticleId = val; }
+  void SetParentParticleMomentum(TVector3 val) { fParentParticleMomentum = val; }
 
   void SetNreflectionsInPrizm(Int_t val) { fNreflectionsInPrizm = val; }
   void SetPathInPrizm(Long64_t val) { fPathInPrizm = val; }
@@ -91,6 +93,7 @@ class PrtHit : public PHG4Hitv1
   TVector3 fPosition;
   TVector3 fMomBar;
   TVector3 fPosBar;
+  TVector3 fParentParticleMomentum;
 
   Int_t fMcpId;
   Int_t fPixelId;

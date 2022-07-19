@@ -48,10 +48,9 @@ class G4DIRCTree : public SubsysReco
   std::map<std::string, int> _detid;
 
   TTree *g4tree;
-  //TTree *fLutTree;
   G4EventTree mG4EvtTree;
   TFile *outfile;
-  //TClonesArray *fLut;
+
 
 };
 

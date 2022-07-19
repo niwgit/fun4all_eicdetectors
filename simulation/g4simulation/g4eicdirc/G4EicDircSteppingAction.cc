@@ -36,6 +36,7 @@
 #include <Geant4/G4VTouchable.hh>             // for G4VTouchable
 #include <Geant4/G4VUserTrackInformation.hh>  // for G4VUserTrackInformation
 #include <Geant4/Randomize.hh>
+#include <Geant4/G4RunManager.hh>
 
 #include <cmath>  // for isfinite
 #include <iostream>
@@ -124,6 +125,11 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   // make sure we are in a volume
   if (m_ActiveFlag)
   {
+    const G4DynamicParticle *dynParticle = aTrack->GetDynamicParticle();
+    G4ParticleDefinition *particle = dynParticle->GetDefinition();
+    G4String ParticleName = particle->GetParticleName();
+      
+   
     if (m_Params->get_int_param("disable_photon_sim") == 1)
     {
       bool geantino = false;
@@ -135,6 +141,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       {
         geantino = true;
       }
+      
       G4StepPoint *prePoint = aStep->GetPreStepPoint();
       G4StepPoint *postPoint = aStep->GetPostStepPoint();
       //       std::cout << "track id " << aTrack->GetTrackID() << std::endl;
@@ -163,6 +170,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
         {
           m_Hit = new PHG4Hitv1();
         }
+	
         //here we set the entrance values in cm
         m_Hit->set_x(0, prePoint->GetPosition().x() / cm);
         m_Hit->set_y(0, prePoint->GetPosition().y() / cm);
@@ -359,6 +367,15 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
         // ownership has been transferred to container, set to null
         // so we will create a new hit for the next track
 
+	if ((whichactive_int == 2 || whichactive_int == 3) && (ParticleName != "opticalphoton")) // pre step in a long piece of bar(2) or short piece of bar(3)
+	  {
+	    map_track_id_and_pid.insert(std::pair<Int_t, Int_t>(aTrack->GetTrackID(), aTrack->GetParticleDefinition()->GetPDGEncoding()));
+	    //std::cout << "track in DIRC bar: " << ParticleName << "\t" << "pid = " << aTrack->GetParticleDefinition()->GetPDGEncoding() << std::endl;  
+
+	    TVector3 track_momentum_at_bar(prePoint->GetMomentum().x() / GeV, prePoint->GetMomentum().y() / GeV, prePoint->GetMomentum().z() / GeV);
+	    map_track_id_and_momentum.insert(std::pair<Int_t, TVector3>(aTrack->GetTrackID(), track_momentum_at_bar));
+	  }
+
         m_PrtHit->set_layer(detector_id);
         // here we set the entrance values in cm
         m_PrtHit->set_x(0, prePoint->GetPosition().x() / cm);
@@ -447,7 +464,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
       {
         m_EionSum += eion;
       }
-
+      
       // if any of these conditions is true this is the last step in
       // this volume and we need to save the hit
       // postPoint->GetStepStatus() == fGeomBoundary: track leaves this volume
@@ -462,7 +479,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
           postPoint->GetStepStatus() == fAtRestDoItProc ||
           aTrack->GetTrackStatus() == fStopAndKill)
       {
-        if ((whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) && (postPoint->GetStepStatus() == fGeomBoundary))  // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
+	if ((whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) && (postPoint->GetStepStatus() == fGeomBoundary))  // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
         {
           // normal to the closest boundary
           G4Navigator *theNavigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
@@ -475,12 +492,13 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
 	  G4ThreeVector normal0 = theNavigator->GetLocalExitNormal(&valid);
           G4ThreeVector normal = theNavigator->GetLocalToGlobalTransform().TransformAxis(-normal0);
-          normal0 = touch->GetHistory()->GetTransform(1).TransformAxis(normal);
+          //normal0 = touch->GetHistory()->GetTransform(1).TransformAxis(normal);
 
           if (valid)
           {
             if (whichactive_int == 9)  // Prizm
             {
+	      //std::cout << "volume name = " << volume->GetName() << "\t" << ", z position = " << postPoint->GetPosition().z() / cm << " cm" << std::endl;
 	      //std::cout << "normal.x() = " << normal.x() << "\t" << "normal.y() = " << normal.y() << "\t" << "normal.z() = " << normal.z() << std::endl;
 	      //std::cout << "gnormal.x() = " << gnormal.x() << "\t" << "gnormal.y() = " << gnormal.y() << "\t" << "gnormal.z() = " << gnormal.z() << std::endl;
  
@@ -497,14 +515,14 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
               if (normal.x() < -0.99) nid = 8;  // top
             }
             else if (whichactive_int == 7)  // Lens2
-            {
+	    {	     	     
+	      if(vector_nid.size() != 0) vector_nid.clear();
               nid = 9;
-            }
+	    }
 
 	    //std::cout << "nid = " << nid << std::endl;
-            if (nid > 0)  vector_nid.push_back(nid);
-
-          }
+            if (nid > 0) vector_nid.push_back(nid);		      	   
+          }	  
 	}
 
         // save only hits with energy deposit (or geantino)
@@ -519,7 +537,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
           m_PrtHit->set_t(1, postPoint->GetGlobalTime() / nanosecond);
 
-          if (whichactive_int_post == 11)  // post step in Pixel ---------------
+          if((whichactive_int_post == 11) && (ParticleName == "opticalphoton"))  // post step in Pixel ---------------
           {
             G4ThreeVector globalpos = aStep->GetPostStepPoint()->GetPosition();
             G4ThreeVector localpos = touchpost->GetHistory()->GetTopTransform().TransformPoint(globalpos);
@@ -581,6 +599,30 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
             m_PrtHit->SetPosition(position);
             m_PrtHit->SetMomentum(momentum);
 
+	    Int_t photon_parent_pid = 0;
+	    std::map<Int_t, Int_t>::iterator itr;
+
+	    for(itr = map_track_id_and_pid.begin(); itr != map_track_id_and_pid.end(); ++itr)
+	      {
+		if(itr->first == aTrack->GetParentID())
+		  {
+		    photon_parent_pid = itr->second;
+		    m_PrtHit->SetParentParticleId(photon_parent_pid);
+		  }
+	      }  
+	        
+	    std::map<Int_t, TVector3>::iterator iter;
+
+	    TVector3 photon_parent_momentum;
+	    for(iter = map_track_id_and_momentum.begin(); iter != map_track_id_and_momentum.end(); ++iter)
+	      {
+		if(iter->first == aTrack->GetParentID())
+		  {
+		    photon_parent_momentum = iter->second; 
+		    m_PrtHit->SetParentParticleMomentum(photon_parent_momentum);
+		  }
+	      }
+
             int refl = 0;
             Int_t normal_id = 0;
             Long64_t pathId = 0;
@@ -592,13 +634,14 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
               pathId = (pathId * 10L) + normal_id;
             }
 
-            //std::cout << "nrefl = " << refl << std::endl;
-            //std::cout << "path id = " << pathId << std::endl;
+	    //std::cout << "nrefl = " << refl << std::endl;
+	    //std::cout << "path id = " << pathId << std::endl;
 
-            m_PrtHit->SetNreflectionsInPrizm(refl);
-            m_PrtHit->SetPathInPrizm(pathId);
-
-            vector_nid.clear();
+	    m_PrtHit->SetNreflectionsInPrizm(refl);
+	    m_PrtHit->SetPathInPrizm(pathId);
+	    
+	    vector_nid.clear();
+	      
 	    
             if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
             {
@@ -652,6 +695,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   {
     return false;
   }
+
   return false;
 }
 

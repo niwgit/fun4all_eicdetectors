@@ -12,13 +12,14 @@ G4VParticleChange* G4EicDircOpBoundaryProcess::PostStepDoIt(const G4Track& aTrac
   G4StepPoint* pPostStepPoint = aStep.GetPostStepPoint();
   G4VParticleChange* pParticleChange = G4OpBoundaryProcess::PostStepDoIt(aTrack, aStep);
   
-  /*double endofbar = 0.5*(4200+4*0.05); //1250/2.;
+  double endofbar = -(1)*(0.5*(4235 + 4*0.05)) - 437.5; 
     
- {  
-  pParticleChange->ProposeTrackStatus(fStopAndKill);
-    if(pPreStepPoint->GetPosition().z() < endofbar) pParticleChange->ProposeTrackStatus(fStopAndKill);
-    }
- */
+  /*if(pPostStepPoint->GetPosition().z() > pPreStepPoint->GetPosition().z())
+    {
+      pParticleChange->ProposeTrackStatus(fStopAndKill);
+      if(pPreStepPoint->GetPosition().z() > endofbar) pParticleChange->ProposeTrackStatus(fStopAndKill);
+      }*/
+
  if ((aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName().contains("lLens3")) && pPostStepPoint->GetPosition().z() > pPreStepPoint->GetPosition().z())
   {
     pParticleChange->ProposeTrackStatus(fStopAndKill);

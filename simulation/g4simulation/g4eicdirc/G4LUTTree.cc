@@ -39,7 +39,7 @@ int G4LUTTree::Init(PHCompositeNode *)
   fLut = new TClonesArray("PrtLutNode");
   fLutTree = new TTree("prtlut","Look-up table for the geometrical reconstruction.");
   fLutTree->Branch("LUT",&fLut,256000,2); 
-  Int_t Nnodes = 100000;
+  Int_t Nnodes = 24*256;
     
   TClonesArray &fLuta = *fLut; 
   for (Long64_t n=0; n<Nnodes; n++) 
@@ -65,7 +65,7 @@ int G4LUTTree::process_event(PHCompositeNode *topNode)
   double theta = atan2(pt, pz);
   double pid = primRange.first->second->get_pid();
   TVector3 dir_vec(px, py, pz);
-  
+
   int nhits = 0;
 
   std::ostringstream nodename;
