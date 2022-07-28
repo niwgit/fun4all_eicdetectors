@@ -114,14 +114,14 @@ int G4DIRCTree::process_event(PHCompositeNode *topNode)
     nodename << "G4HIT_" << *iter;
     PHG4HitContainer *hits = findNode::getClass<PHG4HitContainer>(topNode, nodename.str());
 
-    if (!strcmp("G4HIT_DIRC", nodename.str().c_str()))  // DIRC
+    if (!strcmp("G4HIT_hpDIRC", nodename.str().c_str()))  // DIRC
     {
-      process_hit(hits, "G4HIT_DIRC", detid, nhits, dir_vec);
+      process_hit(hits, "G4HIT_hpDIRC", detid, nhits, dir_vec);
     }
   }
 
   mG4EvtTree.nhits = nhits;
-
+  //std::cout << "number of hits = " << nhits << std::endl;
   if (g4tree) g4tree->Fill();
 
   evt_num++;

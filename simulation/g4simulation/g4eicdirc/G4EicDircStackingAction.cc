@@ -75,9 +75,9 @@ G4ClassificationOfNewTrack G4EicDircStackingAction::ClassifyNewTrack(const G4Tra
         fScintillationCounter++;
       if (aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov")
         fCerenkovCounter++;
-    }
+    }    
   }
-
+  
   int whichactive_int = m_Detector->IsInDetector(volume);
   bool whichactive = (whichactive_int > 0 && whichactive_int < 12);
 
@@ -85,7 +85,7 @@ G4ClassificationOfNewTrack G4EicDircStackingAction::ClassifyNewTrack(const G4Tra
   {
     return fUrgent;
   }
-
+  
   std::string particlename = aTrack->GetDefinition()->GetParticleName();
   if (particlename == "opticalphoton")
   {
@@ -103,6 +103,12 @@ G4ClassificationOfNewTrack G4EicDircStackingAction::ClassifyNewTrack(const G4Tra
 
   return fUrgent;
 }
+
+/*void G4EicDircStackingAction::NewStage()
+{
+  if (Verbosity()) G4cout << "Number of Cherenkov photons produced in this event : " << fCerenkovCounter << G4endl;
+  return;
+  }*/
 
 void G4EicDircStackingAction::PrepareNewEvent()
 {

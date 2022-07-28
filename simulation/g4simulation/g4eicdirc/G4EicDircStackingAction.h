@@ -18,6 +18,7 @@ class G4EicDircStackingAction : public PHG4StackingAction
   ~G4EicDircStackingAction() override;
 
   G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* aTrack) override;
+  //void NewStage() override;
   void PrepareNewEvent() override;
 
 
