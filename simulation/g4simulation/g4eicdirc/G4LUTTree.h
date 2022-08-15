@@ -49,7 +49,7 @@ class G4LUTTree : public SubsysReco
 
   TTree *fLutTree;
   TFile *outfile;
-  TClonesArray *fLut;
+  TClonesArray *fLut[10];
 
 };
 

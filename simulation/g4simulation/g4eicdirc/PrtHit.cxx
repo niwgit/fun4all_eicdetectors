@@ -4,7 +4,8 @@ ClassImp(PrtHit)
 
     // -----   Default constructor   -------------------------------------------
     PrtHit::PrtHit()
-  : fMcpId(-1)
+  : fBarId(-1)
+  , fMcpId(-1)
   , fPixelId(-1)
   , fChannel(-1)
   , fMultiplicity(-1)

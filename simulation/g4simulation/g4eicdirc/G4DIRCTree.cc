@@ -60,6 +60,7 @@ int G4DIRCTree::Init(PHCompositeNode *)
   g4tree->Branch("z1", mG4EvtTree.z1, "z1[nhits]/D");
   g4tree->Branch("edep", mG4EvtTree.edep, "edep[nhits]/D");
 
+  g4tree->Branch("bar_id", mG4EvtTree.bar_id, "bar_id[nhits]/I");
   g4tree->Branch("mcp_id", mG4EvtTree.mcp_id, "mcp_id[nhits]/I");
   g4tree->Branch("pixel_id", mG4EvtTree.pixel_id, "pixel_id[nhits]/I");
   g4tree->Branch("lead_time", mG4EvtTree.lead_time,"lead_time[nhits]/D");
@@ -167,6 +168,7 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
       mG4EvtTree.z1[nhits] = dirc_hit->get_z(1);
       mG4EvtTree.edep[nhits] = dirc_hit->get_edep();
 
+      mG4EvtTree.bar_id[nhits] = dirc_hit->GetBarId();
       mG4EvtTree.mcp_id[nhits] = dirc_hit->GetMcpId();
       mG4EvtTree.pixel_id[nhits] = dirc_hit->GetPixelId();
       mG4EvtTree.lead_time[nhits] = dirc_hit->GetLeadTime();

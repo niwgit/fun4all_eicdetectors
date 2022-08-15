@@ -40,6 +40,7 @@ class G4EicDircSteppingAction : public PHG4SteppingAction
   void SetSupportNodeName(const std::string& nam) { m_SupportNodeName = nam; }
 
   std::vector<Int_t> vector_nid;
+  std::vector<Int_t> vector_barid;
   std::map<Int_t, Int_t> map_track_id_and_pid;
   std::map<Int_t, TVector3> map_track_id_and_momentum;
 

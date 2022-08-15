@@ -47,6 +47,7 @@ class PrtHit : public PHG4Hitv1
   TVector3 GetMomentumAtBar() const { return fMomBar; };
   TVector3 GetPositionAtBar() const { return fPosBar; };
 
+  Int_t GetBarId() {return fBarId; }
   Int_t GetMcpId() { return fMcpId; }
   Int_t GetPixelId() { return fPixelId; }
   Int_t GetChannel() { return fChannel; }
@@ -72,6 +73,7 @@ class PrtHit : public PHG4Hitv1
   void SetMomentumAtBar(TVector3 val) { fMomBar = val; }
   void SetPositionAtBar(TVector3 val) { fPosBar = val; }
 
+  void SetBarId(Int_t val) { fBarId = val; }
   void SetMcpId(Int_t val) { fMcpId = val; }
   void SetPixelId(Int_t val) { fPixelId = val; }
   void SetChannel(Int_t val) { fChannel = val; }
@@ -95,6 +97,7 @@ class PrtHit : public PHG4Hitv1
   TVector3 fPosBar;
   TVector3 fParentParticleMomentum;
 
+  Int_t fBarId;
   Int_t fMcpId;
   Int_t fPixelId;
   Int_t fChannel;

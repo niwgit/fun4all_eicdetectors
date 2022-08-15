@@ -479,6 +479,24 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
           postPoint->GetStepStatus() == fAtRestDoItProc ||
           aTrack->GetTrackStatus() == fStopAndKill)
       {
+	if(whichactive_int == 3 && (ParticleName = "opticalphoton")) // 3 -> lBarS 
+	  {
+	    G4String bar_volume_id;
+	  
+	    if(vector_barid.size() != 0) vector_barid.clear();
+
+	    if((volume->GetName().contains("10")) || (volume->GetName().contains("11")) || (volume->GetName().contains("12")))
+	      {
+		bar_volume_id = volume->GetName().substr(22,2);
+	      }
+	    else bar_volume_id = volume->GetName().substr(21,2);
+	    //std::cout << "volume name = " << volume->GetName() << "\t" << ", bar volume id = " << bar_volume_id << std::endl;
+	    int bar_vol_id = stoi(bar_volume_id);
+	    //std::cout << "bar vol. id = " << bar_vol_id << std::endl;
+	    vector_barid.push_back(bar_vol_id);
+	  }
+	
+
 	if ((whichactive_int == 7 || whichactive_int == 8 || whichactive_int == 9) && (postPoint->GetStepStatus() == fGeomBoundary))  // for relection information (7-lLens2, 8-lLens3, 9-lPrizm)
         {
           // normal to the closest boundary
@@ -641,7 +659,13 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 	    m_PrtHit->SetPathInPrizm(pathId);
 	    
 	    vector_nid.clear();
-	      
+
+	    int barId = (vector_barid[0]-6)/8;
+	    //std::cout << "bar id = " << barId << std::endl;
+
+	    m_PrtHit->SetBarId(barId);
+
+	    vector_barid.clear();
 	    
             if (G4VUserTrackInformation *p = aTrack->GetUserInformation())
             {

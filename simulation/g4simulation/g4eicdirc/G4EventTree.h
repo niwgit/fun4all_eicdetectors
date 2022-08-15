@@ -28,6 +28,7 @@ typedef struct
   Double_t y1[MAXHIT];
   Double_t z1[MAXHIT];
   Double_t edep[MAXHIT];
+  Int_t bar_id[MAXHIT];
   Int_t mcp_id[MAXHIT];
   Int_t pixel_id[MAXHIT];
   Double_t lead_time[MAXHIT];

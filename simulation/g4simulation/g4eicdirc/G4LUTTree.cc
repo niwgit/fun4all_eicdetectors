@@ -36,16 +36,28 @@ int G4LUTTree::Init(PHCompositeNode *)
   
   //-------- LUT --------
   
-  fLut = new TClonesArray("PrtLutNode");
+  //fLut = new TClonesArray("PrtLutNode");
   fLutTree = new TTree("prtlut","Look-up table for the geometrical reconstruction.");
-  fLutTree->Branch("LUT",&fLut,256000,2); 
+  //fLutTree->Branch("LUT",&fLut,256000,2); 
   Int_t Nnodes = 24*256;
     
-  TClonesArray &fLuta = *fLut; 
+  /*TClonesArray &fLuta = *fLut; 
   for (Long64_t n=0; n<Nnodes; n++) 
     {
       new((fLuta)[n]) PrtLutNode(n);
-    }    
+      }*/
+
+  
+  for(Int_t b=0; b < 10; b++){
+      
+      fLut[b] = new TClonesArray("PrtLutNode");
+      fLutTree->Branch(Form("LUT_%d",b),&fLut[b],256000,2);
+
+      TClonesArray &fLuta = *fLut[b]; 
+      for (Long64_t n=0; n<Nnodes; n++) {
+		new((fLuta)[n]) PrtLutNode(n);
+      }
+  }
 
   return 0;
 }
@@ -117,7 +129,8 @@ int G4LUTTree::process_hit(PHG4HitContainer *hits, const std::string &dName, int
       PrtHit *dirc_hit = dynamic_cast<PrtHit *>(hit_iter_0->second);
       
       int id = 256*dirc_hit->GetMcpId() + dirc_hit->GetPixelId();
-      ((PrtLutNode*)(fLut->At(id)))->
+      //((PrtLutNode*)(fLut->At(id)))->
+      ((PrtLutNode*)(fLut[dirc_hit->GetBarId()]->At(id)))->
 	AddEntry(id, dir_vec, dirc_hit->GetPathInPrizm(),
 		 dirc_hit->GetNreflectionsInPrizm(),
 		 dirc_hit->GetLeadTime(), dirc_hit->GetGlobalPos(), dirc_hit->GetDigiPos());	
