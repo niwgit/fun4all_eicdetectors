@@ -38,10 +38,12 @@ typedef struct
   Double_t hit_digiPos[MAXHIT][3];
   Double_t hit_mom[MAXHIT][3];
   Double_t hit_pos[MAXHIT][3];
+  Double_t track_momentum_at_bar[MAXHIT][3];
   Long64_t hit_pathId[MAXHIT];
   Int_t nrefl[MAXHIT];
   Int_t parent_pid[MAXHIT];
   Double_t parent_momentum[MAXHIT];
+
 
 } G4EventTree;
 

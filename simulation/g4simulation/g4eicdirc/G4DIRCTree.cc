@@ -69,12 +69,13 @@ int G4DIRCTree::Init(PHCompositeNode *)
   g4tree->Branch("nrefl", mG4EvtTree.nrefl, "nrefl[nhits]/I");
   g4tree->Branch("parent_pid", mG4EvtTree.parent_pid, "parent_pid[nhits]/I");
   g4tree->Branch("parent_momentum", mG4EvtTree.parent_momentum, "parent_momentum[nhits]/D");
-
+  
   g4tree->Branch("hit_globalPos", mG4EvtTree.hit_globalPos, "hit_globalPos[nhits][3]/D");
   g4tree->Branch("hit_localPos", mG4EvtTree.hit_localPos, "hit_localPos[nhits][3]/D");
   g4tree->Branch("hit_digiPos", mG4EvtTree.hit_digiPos, "hit_digiPos[nhits][3]/D");
   g4tree->Branch("hit_mom", mG4EvtTree.hit_mom, "hit_mom[nhits][3]/D");
   g4tree->Branch("hit_pos", mG4EvtTree.hit_pos, "hit_pos[nhits][3]/D");
+  g4tree->Branch("track_momentum_at_bar", mG4EvtTree.track_momentum_at_bar, "track_momentum_at_bar[nhits][3]/D");
 
   return 0;
 }
@@ -184,7 +185,8 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
 	mG4EvtTree.hit_localPos[nhits][i] = dirc_hit->GetLocalPos()(i);
 	mG4EvtTree.hit_digiPos[nhits][i] = dirc_hit->GetDigiPos()(i);
 	mG4EvtTree.hit_mom[nhits][i] = dirc_hit->GetMomentum()(i);
-	mG4EvtTree.hit_pos[nhits][i] = dirc_hit->GetPosition()(i);	    
+	mG4EvtTree.hit_pos[nhits][i] = dirc_hit->GetPosition()(i);
+	mG4EvtTree.track_momentum_at_bar[nhits][i] = dirc_hit->GetParentParticleMomentum()(i);
 	  
       }
 
