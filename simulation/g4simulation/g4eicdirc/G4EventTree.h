@@ -8,16 +8,9 @@
 typedef struct
 {
   // Event Level
-  Double_t momentum;
-  Double_t theta;
-  Double_t phi;
-  Double_t px;
-  Double_t py;
-  Double_t pz;
-  Int_t pid;
-
-  // Hit level
   int nhits;
+  
+  // Hit level
   int detid[MAXHIT];
   int hitid[MAXHIT];
   int trkid[MAXHIT];
@@ -42,6 +35,7 @@ typedef struct
   Long64_t hit_pathId[MAXHIT];
   Int_t nrefl[MAXHIT];
   Int_t parent_pid[MAXHIT];
+  Int_t parent_track_id[MAXHIT];
   Double_t parent_momentum[MAXHIT];
 
 

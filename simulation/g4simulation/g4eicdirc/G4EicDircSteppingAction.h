@@ -41,12 +41,8 @@ class G4EicDircSteppingAction : public PHG4SteppingAction
 
   std::vector<Int_t> vector_nid;
   std::vector<Int_t> vector_barid;
-  std::map<Int_t, Int_t> map_track_id_and_pid;
-  std::map<Int_t, TVector3> map_track_id_and_momentum;
-
-  //std::vector<Int_t> vector_bar_hit_trackid;
-  //std::vector<TVector3> vector_p_bar;
-  //std::vector<TVector3> vector_hit_pos_bar;
+  Int_t parent_track_pid;
+  TVector3 track_momentum_at_bar;
 
  private:
   //! pointer to the detector

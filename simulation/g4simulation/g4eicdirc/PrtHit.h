@@ -13,16 +13,6 @@
 #include <g4main/PHG4Hitv1.h>
 #include "TVector3.h"
 
-/*namespace bar_vectors
-{
-  std::vector<TVector3> vector_p_bar;
-  std::vector<TVector3> vector_hit_pos_bar;
-
-  std::vector<TVector3> get_p_bar() { return vector_p_bar; }
-  std::vector<TVector3> get_pos_bar() { return vector_hit_pos_bar;}  
-
-  }*/
-
 class PrtHit : public PHG4Hitv1
 {
  public:
@@ -34,6 +24,7 @@ class PrtHit : public PHG4Hitv1
   // Accessors
   Int_t GetParticleId() { return fParticleId; }
   Int_t GetParentParticleId() { return fParentParticleId; }
+  Int_t GetParentTrackId() { return fParentTrackId; }
   TVector3 GetParentParticleMomentum() { return fParentParticleMomentum; }
 
   Int_t GetNreflectionsInPrizm() { return fNreflectionsInPrizm; }
@@ -60,6 +51,7 @@ class PrtHit : public PHG4Hitv1
   // Mutators
   void SetParticleId(Int_t val) { fParticleId = val; }
   void SetParentParticleId(Int_t val) { fParentParticleId = val; }
+  void SetParentTrackId(Int_t val) { fParentTrackId = val; }
   void SetParentParticleMomentum(TVector3 val) { fParentParticleMomentum = val; }
 
   void SetNreflectionsInPrizm(Int_t val) { fNreflectionsInPrizm = val; }
@@ -86,6 +78,7 @@ class PrtHit : public PHG4Hitv1
  protected:
   Int_t fParticleId;
   Int_t fParentParticleId;
+  Int_t fParentTrackId;
   Int_t fNreflectionsInPrizm;
   Long64_t fPathInPrizm;
   TVector3 fLocalPos;

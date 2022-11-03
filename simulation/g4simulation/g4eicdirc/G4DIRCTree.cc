@@ -39,16 +39,9 @@ int G4DIRCTree::Init(PHCompositeNode *)
   std::cout << "Initialize Geant 4 Tree ... << " << std::endl;
 
   /// Event level
-  g4tree->Branch("momentum", &mG4EvtTree.momentum, "p/D");
-  g4tree->Branch("theta", &mG4EvtTree.theta, "theta/D");
-  g4tree->Branch("phi", &mG4EvtTree.phi, "phi/D");
-  g4tree->Branch("px", &mG4EvtTree.px, "px/D");
-  g4tree->Branch("py", &mG4EvtTree.py, "py/D");
-  g4tree->Branch("pz", &mG4EvtTree.pz, "pz/D");
-  g4tree->Branch("pid", &mG4EvtTree.pid, "pid/I");
-
-  /// Hit level
   g4tree->Branch("nhits", &mG4EvtTree.nhits, "nhits/I");
+  
+  /// Hit level
   g4tree->Branch("detid", mG4EvtTree.detid, "detid[nhits]/I");
   g4tree->Branch("hitid", mG4EvtTree.hitid, "hitid[nhits]/I");
   g4tree->Branch("trkid", mG4EvtTree.trkid, "trkid[nhits]/I");
@@ -68,6 +61,7 @@ int G4DIRCTree::Init(PHCompositeNode *)
   g4tree->Branch("hit_pathId", mG4EvtTree.hit_pathId, "hit_pathId[nhits]/L");
   g4tree->Branch("nrefl", mG4EvtTree.nrefl, "nrefl[nhits]/I");
   g4tree->Branch("parent_pid", mG4EvtTree.parent_pid, "parent_pid[nhits]/I");
+  g4tree->Branch("parent_track_id", mG4EvtTree.parent_track_id, "parent_track_id[nhits]/I");
   g4tree->Branch("parent_momentum", mG4EvtTree.parent_momentum, "parent_momentum[nhits]/D");
   
   g4tree->Branch("hit_globalPos", mG4EvtTree.hit_globalPos, "hit_globalPos[nhits][3]/D");
@@ -81,29 +75,7 @@ int G4DIRCTree::Init(PHCompositeNode *)
 }
 
 int G4DIRCTree::process_event(PHCompositeNode *topNode)
-{
-  // get the primary particle which did this to us....
-  PHG4TruthInfoContainer *truthInfoList = findNode::getClass<PHG4TruthInfoContainer>(topNode, "G4TruthInfo");
-
-  const PHG4TruthInfoContainer::Range primRange = truthInfoList->GetPrimaryParticleRange();
-  double px = primRange.first->second->get_px();
-  double py = primRange.first->second->get_py();
-  double pz = primRange.first->second->get_pz();
-  double p = sqrt(px * px + py * py + pz * pz);
-  double pt = sqrt(px * px + py * py);
-  double phi = atan2(py, px);
-  double theta = atan2(pt, pz);
-  double pid = primRange.first->second->get_pid();
-  TVector3 dir_vec(px, py, pz);
-
-  mG4EvtTree.momentum = p;
-  mG4EvtTree.theta = theta;
-  mG4EvtTree.phi = phi;
-  mG4EvtTree.px = px;
-  mG4EvtTree.py = py;
-  mG4EvtTree.pz = pz;
-  mG4EvtTree.pid = pid;
-
+{  
   int nhits = 0;
 
   std::ostringstream nodename;
@@ -176,6 +148,7 @@ int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, in
       mG4EvtTree.wavelength[nhits] = dirc_hit->GetTotTime();
       mG4EvtTree.hit_pathId[nhits] = dirc_hit->GetPathInPrizm();
       mG4EvtTree.nrefl[nhits] = dirc_hit->GetNreflectionsInPrizm();
+      mG4EvtTree.parent_track_id[nhits] = dirc_hit->GetParentTrackId();
       mG4EvtTree.parent_pid[nhits] = dirc_hit->GetParentParticleId();
       mG4EvtTree.parent_momentum[nhits] = dirc_hit->GetParentParticleMomentum().Mag();
 

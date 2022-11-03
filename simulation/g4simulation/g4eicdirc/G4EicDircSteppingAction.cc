@@ -102,18 +102,7 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
   if (whichactive_int == 10 && volume_post->GetName() == "World") return false;  // 10-Mcp
   if (whichactive_int == 1 && volume_post->GetName() == "World") return false;   // 1-PMT plane
 
-  /*if ((whichactive_int == 6 || whichactive_int == 7) && (volume_post->GetName()=="World")) return false; // 6-lens1, 7-lens2
-
-  if(whichactive_int == 6 && whichactive_int_post == 6) return false;
-  if(whichactive_int == 7 && whichactive_int_post == 7) return false;
-
-  if (whichactive_int == 8 && (aStep->GetPostStepPoint()->GetPosition().z() > aStep->GetPreStepPoint()->GetPosition().z()))
-    {
-      // 8 - lens layer 3
-      return false;
-    }
-  */
-
+  
   // if this block stops everything, just put all kinetic energy into edep
   if (m_BlackHoleFlag)
   {
@@ -360,20 +349,11 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
           m_PrtHit = new PrtHit();
         }
 
-        // for momentum direction at bar
-        //if((prePointVolName.contains("wBar")) && (aStep->IsFirstStepInVolume()) && (aTrack->GetParentID() == 0))
-
-        //m_SaveHitContainer->AddHit(detector_id, m_Hit);
-        // ownership has been transferred to container, set to null
-        // so we will create a new hit for the next track
 
 	if ((whichactive_int == 2 || whichactive_int == 3) && (ParticleName != "opticalphoton")) // pre step in a long piece of bar(2) or short piece of bar(3)
 	  {
-	    map_track_id_and_pid.insert(std::pair<Int_t, Int_t>(aTrack->GetTrackID(), aTrack->GetParticleDefinition()->GetPDGEncoding()));
-	    //std::cout << "track in DIRC bar: " << ParticleName << "\t" << "pid = " << aTrack->GetParticleDefinition()->GetPDGEncoding() << std::endl;  
-
-	    TVector3 track_momentum_at_bar(prePoint->GetMomentum().x() / GeV, prePoint->GetMomentum().y() / GeV, prePoint->GetMomentum().z() / GeV);
-	    map_track_id_and_momentum.insert(std::pair<Int_t, TVector3>(aTrack->GetTrackID(), track_momentum_at_bar));
+	    parent_track_pid = aTrack->GetParticleDefinition()->GetPDGEncoding();
+	    track_momentum_at_bar = TVector3(prePoint->GetMomentum().x() / GeV, prePoint->GetMomentum().y() / GeV, prePoint->GetMomentum().z() / GeV);
 	  }
 
         m_PrtHit->set_layer(detector_id);
@@ -516,10 +496,6 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
           {
             if (whichactive_int == 9)  // Prizm
             {
-	      //std::cout << "volume name = " << volume->GetName() << "\t" << ", z position = " << postPoint->GetPosition().z() / cm << " cm" << std::endl;
-	      //std::cout << "normal.x() = " << normal.x() << "\t" << "normal.y() = " << normal.y() << "\t" << "normal.z() = " << normal.z() << std::endl;
-	      //std::cout << "gnormal.x() = " << gnormal.x() << "\t" << "gnormal.y() = " << gnormal.y() << "\t" << "gnormal.z() = " << gnormal.z() << std::endl;
- 
 	      if (normal.y() > 0.99) nid = 1;   // right
               if (normal.y() < -0.99) nid = 2;  // left
               if (normal.x() > 0.99) nid = 3;   // bottom
@@ -617,29 +593,11 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
             m_PrtHit->SetPosition(position);
             m_PrtHit->SetMomentum(momentum);
 
-	    Int_t photon_parent_pid = 0;
-	    std::map<Int_t, Int_t>::iterator itr;
+	    Int_t parent_track_id = aTrack->GetParentID();
 
-	    for(itr = map_track_id_and_pid.begin(); itr != map_track_id_and_pid.end(); ++itr)
-	      {
-		if(itr->first == aTrack->GetParentID())
-		  {
-		    photon_parent_pid = itr->second;
-		    m_PrtHit->SetParentParticleId(photon_parent_pid);
-		  }
-	      }  
-	        
-	    std::map<Int_t, TVector3>::iterator iter;
-
-	    TVector3 photon_parent_momentum;
-	    for(iter = map_track_id_and_momentum.begin(); iter != map_track_id_and_momentum.end(); ++iter)
-	      {
-		if(iter->first == aTrack->GetParentID())
-		  {
-		    photon_parent_momentum = iter->second; 
-		    m_PrtHit->SetParentParticleMomentum(photon_parent_momentum);
-		  }
-	      }
+	    m_PrtHit->SetParentParticleId(parent_track_pid);
+	    m_PrtHit->SetParentTrackId(parent_track_id);
+	    m_PrtHit->SetParentParticleMomentum(track_momentum_at_bar);		    		  	      
 
             int refl = 0;
             Int_t normal_id = 0;

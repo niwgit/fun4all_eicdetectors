@@ -89,10 +89,6 @@ G4ClassificationOfNewTrack G4EicDircStackingAction::ClassifyNewTrack(const G4Tra
   std::string particlename = aTrack->GetDefinition()->GetParticleName();
   if (particlename == "opticalphoton")
   {
-    if (aTrack->GetParentID() != 1)
-    {
-      return fKill;
-    }
     Double_t lambda = 197.0 * 2.0 * M_PI / (aTrack->GetMomentum().mag() * 1.0E6);
     Double_t ra = gsl_rng_uniform(m_RandomGenerator);
     if (ra > fDetEff[1]->Eval(lambda))
