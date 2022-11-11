@@ -90,7 +90,7 @@ int G4DIRCTree::process_event(PHCompositeNode *topNode)
 
     if (!strcmp("G4HIT_hpDIRC", nodename.str().c_str()))  // DIRC
     {
-      process_hit(hits, "G4HIT_hpDIRC", detid, nhits, dir_vec);
+      process_hit(hits, "G4HIT_hpDIRC", detid, nhits);
     }
   }
 
@@ -120,7 +120,7 @@ void G4DIRCTree::AddNode(const std::string &name, const int detid)
   return;
 }
 
-int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nhits, TVector3 dir_vec)
+int G4DIRCTree::process_hit(PHG4HitContainer *hits, const std::string &dName, int detid, int &nhits)
 {
   if (hits)
   {
