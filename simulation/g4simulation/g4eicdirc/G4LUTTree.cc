@@ -39,7 +39,7 @@ int G4LUTTree::Init(PHCompositeNode *)
   //fLut = new TClonesArray("PrtLutNode");
   fLutTree = new TTree("prtlut","Look-up table for the geometrical reconstruction.");
   //fLutTree->Branch("LUT",&fLut,256000,2); 
-  Int_t Nnodes = 24*256;
+  Int_t Nnodes = 24*64;
     
   /*TClonesArray &fLuta = *fLut; 
   for (Long64_t n=0; n<Nnodes; n++) 
@@ -128,7 +128,7 @@ int G4LUTTree::process_hit(PHG4HitContainer *hits, const std::string &dName, int
     {
       PrtHit *dirc_hit = dynamic_cast<PrtHit *>(hit_iter_0->second);
       
-      int id = 256*dirc_hit->GetMcpId() + dirc_hit->GetPixelId();
+      int id = 64*dirc_hit->GetMcpId() + dirc_hit->GetPixelId();
       //((PrtLutNode*)(fLut->At(id)))->
       ((PrtLutNode*)(fLut[dirc_hit->GetBarId()]->At(id)))->
 	AddEntry(id, dir_vec, dirc_hit->GetPathInPrizm(),

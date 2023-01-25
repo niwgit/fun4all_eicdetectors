@@ -619,8 +619,8 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   m_LogicalVolumes_active[lMcp] = 10;  
     
-  fNpix1 = 16;
-  fNpix2 = 16;
+  fNpix1 = 8;
+  fNpix2 = 8;
 
   if (Verbosity ()) std::cout<<"fNpix1="<<fNpix1 << " fNpix2="<<fNpix2 <<std::endl;
         
