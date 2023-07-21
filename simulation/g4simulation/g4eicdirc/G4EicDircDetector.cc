@@ -454,7 +454,8 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
       if (Verbosity ()) std::cout<<"bad lens"<<std::endl;
       cr2 = r2;
     }
-    fLens[2] = (2*lensMinThikness+r2-sqrt(r2*r2-cr2*cr2)+lensMinThikness);
+    //fLens[2] = (2*lensMinThikness+r2-sqrt(r2*r2-cr2*cr2)+lensMinThikness);
+    fLens[2] = 12;
     if (Verbosity ()) std::cout << "lens thickness ="<< fLens[2] << " mm" << std::endl;
     
     G4ThreeVector zTrans1(0, 0, -r1-fLens[2]/2.+r1-sqrt(r1*r1-cr2*cr2) +lensMinThikness);
@@ -619,8 +620,8 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   m_LogicalVolumes_active[lMcp] = 10;  
     
-  fNpix1 = 8;
-  fNpix2 = 8;
+  fNpix1 = 16;
+  fNpix2 = 16;
 
   if (Verbosity ()) std::cout<<"fNpix1="<<fNpix1 << " fNpix2="<<fNpix2 <<std::endl;
         
@@ -630,8 +631,10 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
   m_LogicalVolumes_active[lPixel] = 11;
     
-  for(int i=0; i<fNpix2; i++){
-    for(int j=0; j<fNpix1; j++){
+  //for(int i=0; i<fNpix2; i++){
+  //for(int j=0; j<fNpix1; j++){
+  for(int i=0; i<fNpix1; i++){                                                                                                             
+    for(int j=0; j<fNpix2; j++){
       double shiftx = i*(fMcpActive[0]/fNpix1)-fMcpActive[0]/2.+0.5*fMcpActive[0]/fNpix1;
       double shifty = j*(fMcpActive[1]/fNpix2)-fMcpActive[1]/2.+0.5*fMcpActive[1]/fNpix2;
       G4VPhysicalVolume *phy1 = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,fNpix2*i+j,OverlapCheck());      

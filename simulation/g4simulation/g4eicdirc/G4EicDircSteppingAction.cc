@@ -569,8 +569,8 @@ bool G4EicDircSteppingAction::UserSteppingAction(const G4Step *aStep,
 
             //cout << "track length = " << aTrack->GetTrackLength() << endl;
 
-            int nBouncesX = (int) (lengthx) / 17.25;
-            int nBouncesY = (int) (lengthy) / 35.0;
+            int nBouncesX = (int) (lengthx) / 17.0;
+            int nBouncesY = (int) (lengthy) / 34.865;
 
             double ll = wavelength * wavelength;
             double n_quartz = sqrt(1. + (0.696 * ll / (ll - pow(0.068, 2))) +
