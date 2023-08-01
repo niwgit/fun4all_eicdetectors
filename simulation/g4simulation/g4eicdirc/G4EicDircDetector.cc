@@ -616,18 +616,23 @@ void G4EicDircDetector::ConstructMe(G4LogicalVolume *logicWorld)
   
   // MCP --
 
-  G4Box* gMcp = new G4Box("gMcp",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/2.);
+  //G4Box* gMcp = new G4Box("gMcp",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/2.);
+  G4Box* gMcp = new G4Box("gMcp",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   m_LogicalVolumes_active[lMcp] = 10;  
     
-  fNpix1 = 16;
-  fNpix2 = 16;
+  //fNpix1 = 16;
+  //fNpix2 = 16;
 
+  fNpix1 = 1;
+  fNpix2 = 1;
+  
   if (Verbosity ()) std::cout<<"fNpix1="<<fNpix1 << " fNpix2="<<fNpix2 <<std::endl;
         
 
   // The MCP Pixel
-  G4Box* gPixel = new G4Box("gPixel",0.5*fMcpActive[0]/fNpix1,0.5*fMcpActive[1]/fNpix2,fMcpActive[2]/16.);
+  //G4Box* gPixel = new G4Box("gPixel",0.5*fMcpActive[0]/fNpix1,0.5*fMcpActive[1]/fNpix2,fMcpActive[2]/16.);
+  G4Box* gPixel = new G4Box("gPixel",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
   m_LogicalVolumes_active[lPixel] = 11;
     
